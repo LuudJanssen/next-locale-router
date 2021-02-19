@@ -24,12 +24,10 @@ export const validateConfig = (config: any): config is IConfig => {
     )
   }
 
-  for (const [index, domain] of config.domains) {
-    validateDomain(domain, `config.domains[${index}]`)
-  }
+  config.domains.forEach((domain, index) => validateDomain(domain, `config.domains[${index}]`))
 
   const locales = getDomainsLocales(config.domains)
-  if (!locales.includes(config.defaultlocale)) {
+  if (!locales.includes(config.defaultLocale)) {
     throw logger.error(
       `The defaultLocale exported from the config file should be a locale that also exists in one of the domains. No domain with locale "${config.defaultLocale}" exists in config.domains.`,
     )

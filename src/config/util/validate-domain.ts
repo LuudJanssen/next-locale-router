@@ -39,9 +39,9 @@ export const validateDomain = (domain: any, locationPrefix: string): domain is I
     )
   }
 
-  for (const [index, subpath] of domain.subpaths) {
-    validateSubpath(subpath, `${locationPrefix}.subpaths[${index}]`)
-  }
+  domain.subpaths.forEach((subpath, index) =>
+    validateSubpath(subpath, `${locationPrefix}.subpaths[${index}]`),
+  )
 
   const locales = getSubpathsLocales(domain.subpaths)
   if (!locales.includes(domain.defaultLocale)) {
