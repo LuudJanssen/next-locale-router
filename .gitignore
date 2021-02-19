@@ -3,3 +3,6 @@ yarn-error.log
 npm-debug.log
 debug.log
 node_modules
+
+# Compiled output
+/lib
