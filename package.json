@@ -1,0 +1,9 @@
+{
+  "name": "leen-bakker-next-i18n-router",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "repository": "https://bitbucket.org/luud-incentro/leen-bakker-next.js-i18n-router",
+  "author": "Luud Janssen",
+  "license": "UNLICENSED",
+  "private": true
+}
