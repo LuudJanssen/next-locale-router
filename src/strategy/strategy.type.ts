@@ -1,3 +1,4 @@
+import { ParsedUrlQuery } from "querystring"
 import { StrategyType } from "./strategy-type.enum"
 
 export interface PassThroughStrategy {
@@ -12,8 +13,13 @@ export interface PermanentRedirectStrategy {
   data: PermanentRedirectStrategyData
 }
 
+export interface RenderStrategyQueryParameters extends ParsedUrlQuery {
+  __nextLocale: string
+}
+
 export interface RenderStrategyData {
-  path: string
+  pathname: string
+  query: RenderStrategyQueryParameters
 }
 
 export interface RenderStrategy {

@@ -9,6 +9,6 @@ export const createMiddleware = (config: Config, app: Server): RequestHandler =>
 
   return (request, response, next) => {
     const strategy = localeStrategyInvestigator.determineStrategy(request)
-    return localeStrategyHandler.handleStrategy(strategy, response, next)
+    return localeStrategyHandler.handleStrategy(strategy, request, response, next)
   }
 }

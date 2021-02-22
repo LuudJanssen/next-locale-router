@@ -19,7 +19,9 @@ export class StrategyLogger {
       return
     }
 
-    const logLine = this.logger.log(`${strategy.type}\t`, formattedUrl)
+    const tabs = strategy.type === StrategyType.RENDER ? "\t\t\t" : "\t"
+
+    const logLine = this.logger.log(`${strategy.type}${tabs}`, formattedUrl)
     logLine.add(`╚═══▶ data\t\t`, strategy.data)
     return
   }

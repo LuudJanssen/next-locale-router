@@ -1,10 +1,10 @@
-import { NextConfig } from "next/dist/next-server/server/config"
 import { IConfig } from "../config.interface"
 import { IDomain } from "../domain.interface"
 import { getDomainByLocale } from "./util/get-domain-for-locale"
 import { getDomainsLocales } from "./util/get-domains-locales"
 import { getLocaleSubpathsForDomains } from "./util/get-locale-subpaths-for-domains"
 import { getSubpathsLocales } from "./util/get-subpaths-locales"
+import { NextI18nConfig } from "./util/next-i18n-config.type"
 
 export class Config {
   public readonly domains: IDomain[]
@@ -24,7 +24,7 @@ export class Config {
     return getDomainByLocale(this.domains, locale)
   }
 
-  public toNextI18nConfig(): NextConfig["i18n"] {
+  public toNextI18nConfig(): NextI18nConfig {
     const domains = this.domains.map((domain) => ({
       domain: domain.hostname,
       defaultLocale: domain.defaultLocale,

@@ -1,6 +1,7 @@
 import { Request } from "express"
 import { format, URL } from "url"
 import { Config } from "../config/config.class"
+import { IDomain } from "../domain.interface"
 import { logger } from "../logger"
 import {
   ChainablePassThroughStrategy as Passthrough,
@@ -10,8 +11,10 @@ import {
 import { Strategy } from "./strategy.type"
 import { getRequestUrl } from "./util/request/get-request-url"
 import { isInternalNextRequest } from "./util/request/is-internal-next-request"
+import { addRenderQueryParameters } from "./util/url/add-render-query-parameters"
 import { cleanPathSegment } from "./util/url/clean-path-segment"
 import { getPathSegments } from "./util/url/get-path-segments"
+import { getQueryParameters } from "./util/url/get-query-parameters"
 import { getSubpathForLocalePathSegment } from "./util/url/get-subpath-for-locale-path-segment"
 import { replaceHostnameInUrl } from "./util/url/replace-hostname-in-url"
 
@@ -32,22 +35,35 @@ export class StrategyInvestigator {
     const localePathSegment = this.getLocalePathSegment(url)
     logger.debug(`Determined locale path segment: "${localePathSegment}"`)
     if (typeof localePathSegment === "undefined") {
-      return new PermanentRedirect({ url: "<<determine new locale url>>" }).log(url).serialize()
+      // Check if we need to redirect, or just pass through because the user's locale doesn't require redirecting
+      return this.createRender(url, "fr").log(url).serialize()
     }
 
     // We can be sure a locale with a matching domain exist because we already know that the
     // localePathSegment is a valid locale or subpath
     const locale = this.getLocaleForLocalePathSegment(localePathSegment)!
     const expectedDomain = this.config.getDomain(locale)!
-
     if (expectedDomain.hostname !== request.hostname) {
-      const urlObject = replaceHostnameInUrl(url, expectedDomain.hostname)
-      const formattedUrl = format(urlObject)
-
-      return new PermanentRedirect({ url: formattedUrl }).log(url).serialize()
+      return this.createRedirectToDomain(url, expectedDomain).log(url).serialize()
     }
 
-    return new Render({ path: "fake" }).log(url).serialize()
+    return this.createRender(url, "fr").log(url).serialize()
+  }
+
+  private createRender(url: URL, locale: string): Render {
+    const queryParameters = getQueryParameters(url)
+    const query = addRenderQueryParameters(queryParameters, locale, this.config)
+
+    return new Render({
+      pathname: url.pathname,
+      query,
+    })
+  }
+
+  private createRedirectToDomain(url: URL, domain: IDomain): PermanentRedirect {
+    const urlObject = replaceHostnameInUrl(url, domain.hostname)
+    const formattedUrl = format(urlObject)
+    return new PermanentRedirect({ url: formattedUrl })
   }
 
   private localeMatchesHostname(locale: string, hostname: string) {

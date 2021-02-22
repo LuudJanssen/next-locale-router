@@ -11,6 +11,5 @@ export const getRequestUrl = (request: Request): URL => {
     slashes: true,
   })
 
-  const url = new URL(request.url, base)
-  return url
+  return new URL(request.url, base)
 }
