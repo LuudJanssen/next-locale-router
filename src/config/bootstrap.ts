@@ -1,4 +1,5 @@
 import { logger } from "../logger"
+import { Config } from "./config.class"
 import { getConfigLocation } from "./util/get-config-location"
 import { readConfig } from "./util/read-config"
 
@@ -9,5 +10,7 @@ export const bootstrap = () => {
     throw logger.error(`Could not find a config file in ${process.cwd}`)
   }
 
-  return readConfig(configLocation)
+  const config = readConfig(configLocation)
+
+  return new Config(config)
 }
