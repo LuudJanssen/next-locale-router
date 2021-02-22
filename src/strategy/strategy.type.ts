@@ -1,21 +1,24 @@
 import { StrategyType } from "./strategy-type.enum"
 
-interface PassThroughStrategy {
+export interface PassThroughStrategy {
   type: StrategyType.PASSTHROUGH
 }
 
-interface PermanentRedirectStrategy {
+export interface PermanentRedirectStrategyData {
+  url: string
+}
+export interface PermanentRedirectStrategy {
   type: StrategyType.PERMANENT_REDIRECT
-  data: {
-    url: string
-  }
+  data: PermanentRedirectStrategyData
 }
 
-interface RenderStrategy {
+export interface RenderStrategyData {
+  path: string
+}
+
+export interface RenderStrategy {
   type: StrategyType.RENDER
-  data: {
-    path: string
-  }
+  data: RenderStrategyData
 }
 
 export type Strategy = PassThroughStrategy | PermanentRedirectStrategy | RenderStrategy

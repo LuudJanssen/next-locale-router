@@ -1,53 +1,83 @@
-import { IncomingMessage } from "http"
+import { Request } from "express"
+import { format, URL } from "url"
 import { Config } from "../config/config.class"
 import { logger } from "../logger"
-import { isDebugMode } from "../util/is-debug-mode"
-import { StrategyType } from "./strategy-type.enum"
+import {
+  ChainablePassThroughStrategy as Passthrough,
+  ChainablePermanentRedirectStrategy as PermanentRedirect,
+  ChainableRenderStrategy as Render,
+} from "./chainable"
 import { Strategy } from "./strategy.type"
-import { InvalidRequestError } from "./util/request/invalid-request.error"
+import { getRequestUrl } from "./util/request/get-request-url"
 import { isInternalNextRequest } from "./util/request/is-internal-next-request"
-import { isValidRequest } from "./util/request/request.type"
+import { cleanPathSegment } from "./util/url/clean-path-segment"
+import { getPathSegments } from "./util/url/get-path-segments"
+import { getSubpathForLocalePathSegment } from "./util/url/get-subpath-for-locale-path-segment"
+import { replaceHostnameInUrl } from "./util/url/replace-hostname-in-url"
 
 export class StrategyInvestigator {
-  constructor(protected config: Config) {}
+  private readonly cleanLocaleSubpaths: string[]
 
-  determineStrategy(request: IncomingMessage): Strategy {
-    if (!isValidRequest(request)) {
-      throw new InvalidRequestError()
-    }
-
-    if (isInternalNextRequest(request)) {
-      const strategy: Strategy = {
-        type: StrategyType.PASSTHROUGH,
-      }
-
-      this.logStrategy(strategy, request.url)
-      return strategy
-    }
-
-    const strategy: Strategy = {
-      type: StrategyType.PERMANENT_REDIRECT,
-      data: {
-        url: "test",
-      },
-    }
-
-    this.logStrategy(strategy, request.url)
-    return strategy
+  constructor(protected config: Config) {
+    this.cleanLocaleSubpaths = config.localeSubpaths.map(cleanPathSegment)
   }
 
-  private logStrategy(strategy: Strategy, url: string) {
-    if (!isDebugMode()) {
-      return
+  public determineStrategy(request: Request): Strategy {
+    const url = getRequestUrl(request)
+
+    if (isInternalNextRequest(url)) {
+      return new Passthrough().log(url).serialize()
     }
 
-    if (strategy.type === StrategyType.PASSTHROUGH) {
-      logger.debug(`${strategy.type}\t\t`, url)
-      return
+    const localePathSegment = this.getLocalePathSegment(url)
+    logger.debug(`Determined locale path segment: "${localePathSegment}"`)
+    if (typeof localePathSegment === "undefined") {
+      return new PermanentRedirect({ url: "<<determine new locale url>>" }).log(url).serialize()
     }
 
-    const logLine = logger.log(`${strategy.type}\t`, url)
-    logLine.add(`╚═══▶ data\t\t`, strategy.data)
-    return
+    // We can be sure a locale with a matching domain exist because we already know that the
+    // localePathSegment is a valid locale or subpath
+    const locale = this.getLocaleForLocalePathSegment(localePathSegment)!
+    const expectedDomain = this.config.getDomain(locale)!
+
+    if (expectedDomain.hostname !== request.hostname) {
+      const urlObject = replaceHostnameInUrl(url, expectedDomain.hostname)
+      const formattedUrl = format(urlObject)
+
+      return new PermanentRedirect({ url: formattedUrl }).log(url).serialize()
+    }
+
+    return new Render({ path: "fake" }).log(url).serialize()
+  }
+
+  private localeMatchesHostname(locale: string, hostname: string) {
+    // We
+    const expectedDomain = this.config.getDomain(locale)!
+    return hostname === expectedDomain.hostname
+  }
+
+  private getLocaleForLocalePathSegment(localePathSegment: string) {
+    const subpaths = this.config.domains.flatMap((domain) => domain.subpaths)
+    const subpath = getSubpathForLocalePathSegment(subpaths, localePathSegment)
+    return subpath?.locale
+  }
+
+  private getLocalePathSegment(url: URL) {
+    const pathSegments = getPathSegments(url)
+    const [expectedLocalePathSegment] = pathSegments
+
+    if (typeof expectedLocalePathSegment === "undefined") {
+      return undefined
+    }
+
+    const containsLocaleRelatedSubpath =
+      this.config.locales.includes(expectedLocalePathSegment) ||
+      this.cleanLocaleSubpaths.includes(expectedLocalePathSegment)
+
+    if (!containsLocaleRelatedSubpath) {
+      return undefined
+    }
+
+    return expectedLocalePathSegment
   }
 }

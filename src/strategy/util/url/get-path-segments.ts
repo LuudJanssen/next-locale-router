@@ -1,6 +1,4 @@
-import { parseUrl } from "./parse-url"
+import { URL } from "url"
 
-export const getPathSegments = (url: string) =>
-  parseUrl(url)
-    .pathname.split("/")
-    .filter((segment) => segment !== "")
+export const getPathSegments = (url: URL) =>
+  url.pathname.split("/").filter((segment) => segment !== "")
