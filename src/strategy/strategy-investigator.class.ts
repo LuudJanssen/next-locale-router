@@ -6,6 +6,7 @@ import { logger } from "../logger"
 import { getSubpathByLocale } from "../util/get-subpath-by-locale"
 import { getSubpathForLocalePathSegment } from "../util/get-subpath-for-locale-path-segment"
 import { prefixPathname } from "../util/prefix-pathname"
+import { removeLocalePathSegmentFromPathname } from "../util/remove-locale-path-segment-from-pathname"
 import {
   ChainablePassThroughStrategy as Passthrough,
   ChainablePermanentRedirectStrategy as PermanentRedirect,
@@ -17,11 +18,11 @@ import { extractLocale } from "./util/request/extract-locale"
 import { getRequestUrl } from "./util/request/get-request-url"
 import { isInternalNextRequest } from "./util/request/is-internal-next-request"
 import { localeNeedsRedirect } from "./util/request/locale-needs-redirect"
-import { addRenderQueryParameters } from "./util/url/add-render-query-parameters"
 import { cleanPathSegment } from "./util/url/clean-path-segment"
 import { formatUrl } from "./util/url/format-url"
 import { getPathSegments } from "./util/url/get-path-segments"
 import { getQueryParameters } from "./util/url/get-query-parameters"
+import { getRenderQueryParameters } from "./util/url/get-render-query-parameters"
 import { replaceHostnameInUrl } from "./util/url/replace-hostname-in-url"
 
 export class StrategyInvestigator {
@@ -56,6 +57,14 @@ export class StrategyInvestigator {
     if (typeof localePathSegment === "undefined") {
       const locale = this.negotiateLocaleForUser(request)
 
+      // We can be sure a locale with a matching domain exists because we already know that the
+      // localePathSegment is a valid locale or subpath
+      const expectedDomain = this.config.getDomain(locale)!
+
+      if (expectedDomain.hostname !== domain.hostname) {
+        return this.createRedirectToDomain(url, expectedDomain)
+      }
+
       if (localeNeedsRedirect(url, domain, locale)) {
         return this.createRedirectToLocale(url, domain, locale)
       }
@@ -63,15 +72,8 @@ export class StrategyInvestigator {
       return new Passthrough()
     }
 
-    // We can be sure a locale with a matching domain exist because we already know that the
-    // localePathSegment is a valid locale or subpath
-    const locale = this.getLocaleForLocalePathSegment(localePathSegment)!
-    const expectedDomain = this.config.getDomain(locale)!
-    if (expectedDomain.hostname !== domain.hostname) {
-      return this.createRedirectToDomain(url, expectedDomain)
-    }
-
-    return this.createRender(url, "fr")
+    const locale = this.getLocaleForLocalePathSegment(domain, localePathSegment)!
+    return this.createRender(url, localePathSegment, locale)
   }
 
   private hasDomainForRequest(request: Request) {
@@ -83,12 +85,17 @@ export class StrategyInvestigator {
     return extractLocale(request, domain)
   }
 
-  private createRender(url: URL, locale: string): Render {
+  private createRender(url: URL, localePathSegment: string, locale: string): Render {
     const queryParameters = getQueryParameters(url)
-    const query = addRenderQueryParameters(queryParameters, locale, this.config)
+    const renderPath = removeLocalePathSegmentFromPathname(url.pathname, localePathSegment)
+
+    const query = {
+      ...queryParameters,
+      ...getRenderQueryParameters(locale, this.config),
+    }
 
     return new Render({
-      pathname: url.pathname,
+      pathname: renderPath,
       query,
     })
   }
@@ -120,9 +127,8 @@ export class StrategyInvestigator {
     return hostname === expectedDomain.hostname
   }
 
-  private getLocaleForLocalePathSegment(localePathSegment: string) {
-    const subpaths = this.config.domains.flatMap((domain) => domain.subpaths)
-    const subpath = getSubpathForLocalePathSegment(subpaths, localePathSegment)
+  private getLocaleForLocalePathSegment(domain: IDomain, localePathSegment: string) {
+    const subpath = getSubpathForLocalePathSegment(domain.subpaths, localePathSegment)
     return subpath?.locale
   }
 
