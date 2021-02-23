@@ -121,12 +121,6 @@ export class StrategyInvestigator {
     return new PermanentRedirect({ url: formattedUrl })
   }
 
-  private localeMatchesHostname(locale: string, hostname: string) {
-    // We
-    const expectedDomain = this.config.getDomain(locale)!
-    return hostname === expectedDomain.hostname
-  }
-
   private getLocaleForLocalePathSegment(domain: IDomain, localePathSegment: string) {
     const subpath = getSubpathForLocalePathSegment(domain.subpaths, localePathSegment)
     return subpath?.locale
