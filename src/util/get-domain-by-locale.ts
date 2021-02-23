@@ -7,7 +7,7 @@ export const getDomainByLocale = (domains: IDomain[], locale: string): IDomain =
 
   if (typeof domain === "undefined") {
     const error = new Error(`Domains in config didn't contain locale "${locale}".`)
-    logger.error(error.message)
+    logger.error(error)
     throw error
   }
 

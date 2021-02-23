@@ -3,6 +3,7 @@ import { format, parse, URL } from "url"
 import { Config } from "../config/config.class"
 import { IDomain } from "../domain.interface"
 import { logger } from "../logger"
+import { getDomainsLocales } from "../util/get-domains-locales"
 import { getSubpathByLocale } from "../util/get-subpath-by-locale"
 import { getSubpathForLocalePathSegment } from "../util/get-subpath-for-locale-path-segment"
 import { prefixPathname } from "../util/prefix-pathname"
@@ -75,6 +76,10 @@ export class StrategyInvestigator {
     const pathSegmentLocale = this.getLocaleForLocalePathSegment(domain, localePathSegment)
     const locale = pathSegmentLocale ?? domain.defaultLocale
 
+    if (getDomainsLocales([domain]).includes(localePathSegment)) {
+      return this.createRedirectToLocale(url, domain, locale)
+    }
+
     const renderPath = createRenderPathname(url.pathname, localePathSegment, pathSegmentLocale)
     return this.createRender(url, renderPath, locale)
   }
@@ -108,19 +113,19 @@ export class StrategyInvestigator {
 
     const newPathname = prefixPathname(pathname!, localeSubpath.path)
 
-    const formattedUrl = format({
+    const formattedPathname = format({
       search,
       hash,
       pathname: newPathname,
     })
 
-    return new PermanentRedirect({ url: formattedUrl })
+    return new PermanentRedirect({ location: formattedPathname })
   }
 
   private createRedirectToDomain(url: URL, domain: IDomain): PermanentRedirect {
     const urlObject = replaceHostnameInUrl(url, domain.hostname)
     const formattedUrl = format(urlObject)
-    return new PermanentRedirect({ url: formattedUrl })
+    return new PermanentRedirect({ location: formattedUrl })
   }
 
   private getLocaleForLocalePathSegment(domain: IDomain, localePathSegment: string) {

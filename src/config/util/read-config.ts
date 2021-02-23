@@ -22,7 +22,7 @@ export const readConfig = (path: string): IConfig => {
     return config
   } catch (error) {
     if (error instanceof ConfigValidationError) {
-      logger.error(error.message)
+      logger.error(error)
     }
 
     throw error

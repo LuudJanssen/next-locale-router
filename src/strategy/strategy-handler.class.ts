@@ -1,7 +1,11 @@
 import { NextFunction, Request, Response } from "express"
 import { default as NextServer } from "next/dist/next-server/server/next-server"
+import { format } from "url"
+import { logger } from "../logger"
 import { StrategyType } from "./strategy-type.enum"
-import { Strategy } from "./strategy.type"
+import { PermanentRedirectStrategy, Strategy } from "./strategy.type"
+import { AvoidedRedirectLoopError } from "./util/request/avoided-redirect-loop.error"
+import { getRequestUrl } from "./util/request/get-request-url"
 
 export class StrategyHandler {
   protected readonly handle: ReturnType<NextServer["getRequestHandler"]>
@@ -21,9 +25,29 @@ export class StrategyHandler {
     }
 
     if (strategy.type === StrategyType.PERMANENT_REDIRECT) {
-      return response.redirect(308, strategy.data.url)
+      this.avoidRedirectLoop(request, strategy)
+      return response.redirect(308, strategy.data.location)
     }
 
     next()
+  }
+
+  private avoidRedirectLoop(request: Request, strategy: PermanentRedirectStrategy) {
+    const { search, hash, pathname } = getRequestUrl(request)
+
+    const originalPath = format({
+      search,
+      hash,
+      pathname,
+    })
+
+    if (originalPath === strategy.data.location) {
+      const error = new AvoidedRedirectLoopError(
+        `Redirect loop avoided for hostname "${request.hostname}". Location was already "${strategy.data.location}".`,
+      )
+
+      logger.error(error)
+      throw error
+    }
   }
 }

@@ -43,10 +43,14 @@ export class Logger implements ILogger {
     return this.createLogline("warn")
   }
 
+  error(error: Error): LogLine
   error(...data: any[]): LogLine
   error(message?: any, ...optionalParams: any[]): LogLine
   error(message?: any, ...optionalParams: any[]): LogLine {
-    console.error(chalk.red(this.prefix), message, ...optionalParams)
+    const [firstSegment, ...otherSegments] =
+      message instanceof Error ? [message.name, message.message] : [message, ...optionalParams]
+
+    console.error(chalk.red(this.prefix), firstSegment, ...otherSegments)
     return this.createLogline("error")
   }
 

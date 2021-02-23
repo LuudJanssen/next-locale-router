@@ -6,8 +6,9 @@ export interface PassThroughStrategy {
 }
 
 export interface PermanentRedirectStrategyData {
-  url: string
+  location: string
 }
+
 export interface PermanentRedirectStrategy {
   type: StrategyType.PERMANENT_REDIRECT
   data: PermanentRedirectStrategyData
