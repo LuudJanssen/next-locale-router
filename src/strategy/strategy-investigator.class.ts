@@ -6,7 +6,6 @@ import { logger } from "../logger"
 import { getSubpathByLocale } from "../util/get-subpath-by-locale"
 import { getSubpathForLocalePathSegment } from "../util/get-subpath-for-locale-path-segment"
 import { prefixPathname } from "../util/prefix-pathname"
-import { removeLocalePathSegmentFromPathname } from "../util/remove-locale-path-segment-from-pathname"
 import {
   ChainablePassThroughStrategy as Passthrough,
   ChainablePermanentRedirectStrategy as PermanentRedirect,
@@ -19,6 +18,7 @@ import { getRequestUrl } from "./util/request/get-request-url"
 import { isInternalNextRequest } from "./util/request/is-internal-next-request"
 import { localeNeedsRedirect } from "./util/request/locale-needs-redirect"
 import { cleanPathSegment } from "./util/url/clean-path-segment"
+import { createRenderPathname } from "./util/url/create-render-pathname"
 import { formatUrl } from "./util/url/format-url"
 import { getPathSegments } from "./util/url/get-path-segments"
 import { getQueryParameters } from "./util/url/get-query-parameters"
@@ -72,8 +72,11 @@ export class StrategyInvestigator {
       return new Passthrough()
     }
 
-    const locale = this.getLocaleForLocalePathSegment(domain, localePathSegment)!
-    return this.createRender(url, localePathSegment, locale)
+    const pathSegmentLocale = this.getLocaleForLocalePathSegment(domain, localePathSegment)
+    const locale = pathSegmentLocale ?? domain.defaultLocale
+
+    const renderPath = createRenderPathname(url.pathname, localePathSegment, pathSegmentLocale)
+    return this.createRender(url, renderPath, locale)
   }
 
   private hasDomainForRequest(request: Request) {
@@ -85,9 +88,8 @@ export class StrategyInvestigator {
     return extractLocale(request, domain)
   }
 
-  private createRender(url: URL, localePathSegment: string, locale: string): Render {
+  private createRender(url: URL, renderPath: string, locale: string): Render {
     const queryParameters = getQueryParameters(url)
-    const renderPath = removeLocalePathSegmentFromPathname(url.pathname, localePathSegment)
 
     const query = {
       ...queryParameters,
