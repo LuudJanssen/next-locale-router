@@ -1,6 +1,7 @@
 import { IConfig } from "../config.interface"
 import { IDomain } from "../domain.interface"
 import { ISubpath } from "../subpath.interface"
+import { getDomainByHostname } from "../util/get-domain-by-hostname"
 import { getDomainByLocale } from "../util/get-domain-by-locale"
 import { getDomainsLocales } from "../util/get-domains-locales"
 import { getLocaleSubpathsForDomains } from "../util/get-locale-subpaths-for-domains"
@@ -26,7 +27,11 @@ export class Config {
     return getDomainByLocale(this.domains, locale)
   }
 
-  public getSubpath(locale: string): ISubpath {
+  public getDomainByHostname(hostname: string): IDomain | undefined {
+    return getDomainByHostname(this.domains, hostname)
+  }
+
+  public getSubpath(locale: string): ISubpath | undefined {
     return getSubpathByLocale(this.domains, locale)
   }
 

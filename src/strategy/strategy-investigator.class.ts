@@ -1,19 +1,25 @@
 import { Request } from "express"
-import { format, URL } from "url"
+import { format, parse, URL } from "url"
 import { Config } from "../config/config.class"
 import { IDomain } from "../domain.interface"
 import { logger } from "../logger"
+import { getSubpathByLocale } from "../util/get-subpath-by-locale"
 import { getSubpathForLocalePathSegment } from "../util/get-subpath-for-locale-path-segment"
+import { prefixPathname } from "../util/prefix-pathname"
 import {
   ChainablePassThroughStrategy as Passthrough,
   ChainablePermanentRedirectStrategy as PermanentRedirect,
   ChainableRenderStrategy as Render,
 } from "./chainable"
+import { ChainableStrategy } from "./chainable/chainable-strategy.abstract"
 import { Strategy } from "./strategy.type"
+import { extractLocale } from "./util/request/extract-locale"
 import { getRequestUrl } from "./util/request/get-request-url"
 import { isInternalNextRequest } from "./util/request/is-internal-next-request"
+import { localeNeedsRedirect } from "./util/request/locale-needs-redirect"
 import { addRenderQueryParameters } from "./util/url/add-render-query-parameters"
 import { cleanPathSegment } from "./util/url/clean-path-segment"
+import { formatUrl } from "./util/url/format-url"
 import { getPathSegments } from "./util/url/get-path-segments"
 import { getQueryParameters } from "./util/url/get-query-parameters"
 import { replaceHostnameInUrl } from "./util/url/replace-hostname-in-url"
@@ -27,27 +33,54 @@ export class StrategyInvestigator {
 
   public determineStrategy(request: Request): Strategy {
     const url = getRequestUrl(request)
+    return this.getStrategy(request).log(url).serialize()
+  }
+
+  private getStrategy(request: Request): ChainableStrategy {
+    const url = getRequestUrl(request)
 
     if (isInternalNextRequest(url)) {
-      return new Passthrough().log(url).serialize()
+      return new Passthrough()
     }
 
+    if (!this.hasDomainForRequest(request)) {
+      logger.error(
+        `The locale routing configuration didn't contain configuration for hostname "${request.hostname}". Falling back to passthrough strategy.`,
+      )
+      return new Passthrough()
+    }
+
+    const domain = this.config.getDomainByHostname(request.hostname)!
     const localePathSegment = this.getLocalePathSegment(url)
-    logger.debug(`Determined locale path segment: "${localePathSegment}"`)
+
     if (typeof localePathSegment === "undefined") {
-      // Check if we need to redirect, or just pass through because the user's locale doesn't require redirecting
-      return this.createRender(url, "fr").log(url).serialize()
+      const locale = this.negotiateLocaleForUser(request)
+
+      if (localeNeedsRedirect(url, domain, locale)) {
+        return this.createRedirectToLocale(url, domain, locale)
+      }
+
+      return new Passthrough()
     }
 
     // We can be sure a locale with a matching domain exist because we already know that the
     // localePathSegment is a valid locale or subpath
     const locale = this.getLocaleForLocalePathSegment(localePathSegment)!
     const expectedDomain = this.config.getDomain(locale)!
-    if (expectedDomain.hostname !== request.hostname) {
-      return this.createRedirectToDomain(url, expectedDomain).log(url).serialize()
+    if (expectedDomain.hostname !== domain.hostname) {
+      return this.createRedirectToDomain(url, expectedDomain)
     }
 
-    return this.createRender(url, "fr").log(url).serialize()
+    return this.createRender(url, "fr")
+  }
+
+  private hasDomainForRequest(request: Request) {
+    return typeof this.config.getDomainByHostname(request.hostname) !== "undefined"
+  }
+
+  private negotiateLocaleForUser(request: Request) {
+    const domain = this.config.getDomainByHostname(request.hostname)!
+    return extractLocale(request, domain)
   }
 
   private createRender(url: URL, locale: string): Render {
@@ -58,6 +91,21 @@ export class StrategyInvestigator {
       pathname: url.pathname,
       query,
     })
+  }
+
+  private createRedirectToLocale(url: URL, domain: IDomain, locale: string) {
+    const { pathname, search, hash } = parse(formatUrl(url)) // We need the legacy Node.js API url format
+    const localeSubpath = getSubpathByLocale([domain], locale)!
+
+    const newPathname = prefixPathname(pathname!, localeSubpath.path)
+
+    const formattedUrl = format({
+      search,
+      hash,
+      pathname: newPathname,
+    })
+
+    return new PermanentRedirect({ url: formattedUrl })
   }
 
   private createRedirectToDomain(url: URL, domain: IDomain): PermanentRedirect {
