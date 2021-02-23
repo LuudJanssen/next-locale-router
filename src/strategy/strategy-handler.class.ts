@@ -4,7 +4,6 @@ import { format } from "url"
 import { logger } from "../logger"
 import { StrategyType } from "./strategy-type.enum"
 import { PermanentRedirectStrategy, Strategy } from "./strategy.type"
-import { AvoidedRedirectLoopError } from "./util/request/avoided-redirect-loop.error"
 import { getRequestUrl } from "./util/request/get-request-url"
 
 export class StrategyHandler {
@@ -25,14 +24,21 @@ export class StrategyHandler {
     }
 
     if (strategy.type === StrategyType.PERMANENT_REDIRECT) {
-      this.avoidRedirectLoop(request, strategy)
+      if (this.isRedirectLoop(request, strategy)) {
+        logger.error(
+          `Redirect loop avoided for hostname "${request.hostname}". Location was already "${strategy.data.location}".`,
+        )
+
+        return next()
+      }
+
       return response.redirect(308, strategy.data.location)
     }
 
     next()
   }
 
-  private avoidRedirectLoop(request: Request, strategy: PermanentRedirectStrategy) {
+  private isRedirectLoop(request: Request, strategy: PermanentRedirectStrategy): boolean {
     const { search, hash, pathname } = getRequestUrl(request)
 
     const originalPath = format({
@@ -41,13 +47,6 @@ export class StrategyHandler {
       pathname,
     })
 
-    if (originalPath === strategy.data.location) {
-      const error = new AvoidedRedirectLoopError(
-        `Redirect loop avoided for hostname "${request.hostname}". Location was already "${strategy.data.location}".`,
-      )
-
-      logger.error(error)
-      throw error
-    }
+    return originalPath === strategy.data.location
   }
 }
