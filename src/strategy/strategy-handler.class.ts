@@ -20,6 +20,10 @@ export class StrategyHandler {
       return this.app.render(request, response, strategy.data.pathname, strategy.data.query)
     }
 
+    if (strategy.type === StrategyType.PERMANENT_REDIRECT) {
+      return response.redirect(308, strategy.data.url)
+    }
+
     next()
   }
 }
