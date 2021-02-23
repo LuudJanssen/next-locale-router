@@ -1,6 +1,7 @@
 import { IConfig } from "../../config.interface"
 import { logger } from "../../logger"
 import { isDebugMode } from "../../util/is-debug-mode"
+import { ConfigValidationError } from "./config-validation.error"
 import { validateConfig } from "./validate-config"
 
 export const readConfig = (path: string): IConfig => {
@@ -12,10 +13,18 @@ export const readConfig = (path: string): IConfig => {
   try {
     config = require(path)
   } catch (error) {
-    throw console.error(`Unable to import config file from "${path}". Error:`, error)
+    logger.error(`Unable to import config file from "${path}". Error:`, error)
+    throw new ConfigValidationError(error)
   }
 
-  if (!validateConfig(config)) throw ""
+  try {
+    validateConfig(config)
+    return config
+  } catch (error) {
+    if (error instanceof ConfigValidationError) {
+      logger.error(error.message)
+    }
 
-  return config
+    throw error
+  }
 }

@@ -3,6 +3,7 @@ import { format, URL } from "url"
 import { Config } from "../config/config.class"
 import { IDomain } from "../domain.interface"
 import { logger } from "../logger"
+import { getSubpathForLocalePathSegment } from "../util/get-subpath-for-locale-path-segment"
 import {
   ChainablePassThroughStrategy as Passthrough,
   ChainablePermanentRedirectStrategy as PermanentRedirect,
@@ -15,7 +16,6 @@ import { addRenderQueryParameters } from "./util/url/add-render-query-parameters
 import { cleanPathSegment } from "./util/url/clean-path-segment"
 import { getPathSegments } from "./util/url/get-path-segments"
 import { getQueryParameters } from "./util/url/get-query-parameters"
-import { getSubpathForLocalePathSegment } from "./util/url/get-subpath-for-locale-path-segment"
 import { replaceHostnameInUrl } from "./util/url/replace-hostname-in-url"
 
 export class StrategyInvestigator {

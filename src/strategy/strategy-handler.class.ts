@@ -4,7 +4,11 @@ import { StrategyType } from "./strategy-type.enum"
 import { Strategy } from "./strategy.type"
 
 export class StrategyHandler {
-  constructor(protected app: NextServer) {}
+  protected readonly handle: ReturnType<NextServer["getRequestHandler"]>
+
+  constructor(protected app: NextServer) {
+    this.handle = app.getRequestHandler()
+  }
 
   public handleStrategy(
     strategy: Strategy,

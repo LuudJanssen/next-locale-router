@@ -1,9 +1,11 @@
 import { IConfig } from "../config.interface"
 import { IDomain } from "../domain.interface"
-import { getDomainByLocale } from "./util/get-domain-for-locale"
-import { getDomainsLocales } from "./util/get-domains-locales"
-import { getLocaleSubpathsForDomains } from "./util/get-locale-subpaths-for-domains"
-import { getSubpathsLocales } from "./util/get-subpaths-locales"
+import { ISubpath } from "../subpath.interface"
+import { getDomainByLocale } from "../util/get-domain-by-locale"
+import { getDomainsLocales } from "../util/get-domains-locales"
+import { getLocaleSubpathsForDomains } from "../util/get-locale-subpaths-for-domains"
+import { getSubpathByLocale } from "../util/get-subpath-by-locale"
+import { getSubpathsLocales } from "../util/get-subpaths-locales"
 import { NextI18nConfig } from "./util/next-i18n-config.type"
 
 export class Config {
@@ -20,8 +22,12 @@ export class Config {
     this.localeSubpaths = getLocaleSubpathsForDomains(this.domains)
   }
 
-  public getDomain(locale: string) {
+  public getDomain(locale: string): IDomain {
     return getDomainByLocale(this.domains, locale)
+  }
+
+  public getSubpath(locale: string): ISubpath {
+    return getSubpathByLocale(this.domains, locale)
   }
 
   public toNextI18nConfig(): NextI18nConfig {

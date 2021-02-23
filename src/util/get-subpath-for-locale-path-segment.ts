@@ -1,4 +1,4 @@
-import { ISubpath } from "../../../subpath.interface"
+import { ISubpath } from "../subpath.interface"
 import { subpathContainsLocalePath } from "./subpath-contains-locale-path"
 
 export const getSubpathForLocalePathSegment = (subpaths: ISubpath[], localePathSegment: string) => {

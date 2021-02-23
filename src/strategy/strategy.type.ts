@@ -19,7 +19,7 @@ export interface RenderStrategyQueryParameters extends ParsedUrlQuery {
 
 export interface RenderStrategyData {
   pathname: string
-  query: RenderStrategyQueryParameters
+  query: ParsedUrlQuery
 }
 
 export interface RenderStrategy {
