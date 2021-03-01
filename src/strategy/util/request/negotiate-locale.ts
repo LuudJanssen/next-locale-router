@@ -5,7 +5,7 @@ import { getLocalesForDomains } from "../../../util/get-locales-for-domains"
 import { extractLocaleFromHeader } from "./extract-locale-from-header"
 import { extractNextLocaleCookie } from "./extract-next-locale-cookie"
 
-export const extractLocale = (request: Request, domain: IDomain) => {
+export const negotiateLocale = (request: Request, domain: IDomain) => {
   const locales = getLocalesForDomains([domain])
 
   if (locales.length === 1) {
@@ -34,5 +34,6 @@ export const extractLocale = (request: Request, domain: IDomain) => {
   logger.debug(
     `Language negotiation didn't yield a result and the defaultLocale "${domain.defaultLocale}" was returned.`,
   )
+
   return domain.defaultLocale
 }

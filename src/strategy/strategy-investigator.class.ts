@@ -9,9 +9,9 @@ import { Strategy } from "./strategy.type"
 import { createRedirect } from "./util/create-redirect"
 import { createRedirectToDomain } from "./util/create-redirect-to-domain"
 import { createRender } from "./util/create-render"
-import { extractLocale } from "./util/request/extract-locale"
 import { getRequestUrl } from "./util/request/get-request-url"
 import { isInternalNextRequest } from "./util/request/is-internal-next-request"
+import { negotiateLocale } from "./util/request/negotiate-locale"
 import { subpathNeedsRedirect } from "./util/url/subpath-needs-redirect"
 import { urlMatchDomains } from "./util/url/url-match-domains"
 import { urlMatchRedirects } from "./util/url/url-match-redirects"
@@ -56,7 +56,7 @@ export class StrategyInvestigator {
       return createRedirectToDomain(url, matchedDomain)
     }
 
-    const negotiatedLocale = extractLocale(request, domain)
+    const negotiatedLocale = negotiateLocale(request, domain)
     const negotiatedSubpath = getSubpathByLocale([domain], negotiatedLocale)!
     if (subpathNeedsRedirect(url, negotiatedSubpath)) {
       return createRedirect(url, { source: "/", destination: negotiatedSubpath.path })
