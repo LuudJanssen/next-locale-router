@@ -6,8 +6,8 @@ import { stripTrailingSlash } from "./url/strip-trailing-slash"
 import { updatePathnameWithRedirect } from "./url/update-pathname-with-redirect"
 
 export const createRedirect = (url: URL, redirect: IRedirect) => {
-  const { pathname: originalPathname, search, hash } = parse(formatUrl(url)) // We need the legacy Node.js API url format
-  const newPathname = updatePathnameWithRedirect(originalPathname, redirect)
+  const { pathname, search, hash } = parse(formatUrl(url)) // We need the legacy Node.js API url format
+  const newPathname = updatePathnameWithRedirect(pathname, redirect)
 
   const formattedPathname = format({
     search,
