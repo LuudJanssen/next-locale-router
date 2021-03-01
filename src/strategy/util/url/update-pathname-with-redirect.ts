@@ -13,9 +13,11 @@ export const updatePathnameWithRedirect = (
   const [firstPathSegment, ...pathSegments] = getPathSegments(pathname)
   const destinationPathSegment = cleanPathSegment(redirect.destination)
 
+  const destinationPathSegments = destinationPathSegment ? [destinationPathSegment] : []
+
   if (firstPathSegment === cleanPathSegment(redirect.source)) {
-    return "/" + [destinationPathSegment, ...pathSegments].join("/")
+    return "/" + [...destinationPathSegments, ...pathSegments].join("/")
   }
 
-  return "/" + [destinationPathSegment, firstPathSegment, ...pathSegments].join("/")
+  return "/" + [...destinationPathSegments, firstPathSegment, ...pathSegments].join("/")
 }
