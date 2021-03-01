@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express"
 import { default as NextServer } from "next/dist/next-server/server/next-server"
-import { format } from "url"
+import { format, parse } from "url"
 import { logger } from "../logger"
 import { StrategyType } from "./strategy-type.enum"
-import { PermanentRedirectStrategy, Strategy } from "./strategy.type"
+import { PermanentRedirectStrategy, RenderStrategy, Strategy } from "./strategy.type"
 import { getRequestUrl } from "./util/request/get-request-url"
 
 export class StrategyHandler {
@@ -20,7 +20,7 @@ export class StrategyHandler {
     next: NextFunction,
   ) {
     if (strategy.type === StrategyType.RENDER) {
-      return this.app.render(request, response, strategy.data.pathname, strategy.data.query)
+      return this.handleWithConfigOverride(strategy, request, response)
     }
 
     if (strategy.type === StrategyType.PERMANENT_REDIRECT) {
@@ -36,6 +36,27 @@ export class StrategyHandler {
     }
 
     next()
+  }
+
+  private handleWithConfigOverride(strategy: RenderStrategy, request: Request, response: Response) {
+    // This strategy temporarily
+    const { i18n: originalI18n, ...config } = this.app.nextConfig
+    this.app.nextConfig = config
+
+    const { pathname, ...url } = parse(request.url)
+
+    this.handle(request, response, {
+      ...url,
+      pathname: strategy.data.pathname,
+      query: strategy.data.query,
+    })
+
+    this.app.nextConfig = {
+      ...this.app.nextConfig,
+      i18n: originalI18n,
+    }
+
+    return
   }
 
   private isRedirectLoop(request: Request, strategy: PermanentRedirectStrategy): boolean {
