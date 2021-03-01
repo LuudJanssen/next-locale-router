@@ -1,37 +1,24 @@
 import { Request } from "express"
-import { format, parse, URL } from "url"
 import { Config } from "../config/config.class"
-import { IDomain } from "../domain.interface"
 import { logger } from "../logger"
-import { getDomainsLocales } from "../util/get-domains-locales"
+import { getLocaleRedirects } from "../util/get-locale-redirects"
 import { getSubpathByLocale } from "../util/get-subpath-by-locale"
-import { getSubpathForLocalePathSegment } from "../util/get-subpath-for-locale-path-segment"
-import { prefixPathname } from "../util/prefix-pathname"
-import {
-  ChainablePassThroughStrategy as Passthrough,
-  ChainablePermanentRedirectStrategy as PermanentRedirect,
-  ChainableRenderStrategy as Render,
-} from "./chainable"
+import { ChainablePassThroughStrategy as Passthrough } from "./chainable"
 import { ChainableStrategy } from "./chainable/chainable-strategy.abstract"
 import { Strategy } from "./strategy.type"
+import { createRedirect } from "./util/create-redirect"
+import { createRedirectToDomain } from "./util/create-redirect-to-domain"
+import { createRender } from "./util/create-render"
 import { extractLocale } from "./util/request/extract-locale"
 import { getRequestUrl } from "./util/request/get-request-url"
 import { isInternalNextRequest } from "./util/request/is-internal-next-request"
-import { localeNeedsRedirect } from "./util/request/locale-needs-redirect"
-import { cleanPathSegment } from "./util/url/clean-path-segment"
-import { createRenderPathname } from "./util/url/create-render-pathname"
-import { formatUrl } from "./util/url/format-url"
-import { getPathSegments } from "./util/url/get-path-segments"
-import { getQueryParameters } from "./util/url/get-query-parameters"
-import { getRenderQueryParameters } from "./util/url/get-render-query-parameters"
-import { replaceHostnameInUrl } from "./util/url/replace-hostname-in-url"
+import { subpathNeedsRedirect } from "./util/url/subpath-needs-redirect"
+import { urlMatchDomains } from "./util/url/url-match-domains"
+import { urlMatchRedirects } from "./util/url/url-match-redirects"
+import { urlMatchSubpaths } from "./util/url/url-match-subpaths"
 
 export class StrategyInvestigator {
-  private readonly cleanLocaleSubpaths: string[]
-
-  constructor(protected config: Config) {
-    this.cleanLocaleSubpaths = config.localeSubpaths.map(cleanPathSegment)
-  }
+  constructor(protected config: Config) {}
 
   public determineStrategy(request: Request): Strategy {
     const url = getRequestUrl(request)
@@ -45,110 +32,36 @@ export class StrategyInvestigator {
       return new Passthrough()
     }
 
-    if (!this.hasDomainForRequest(request)) {
+    const domain = this.config.getDomainByHostname(request.hostname)!
+    if (typeof domain === "undefined") {
       logger.error(
         `The locale routing configuration didn't contain configuration for hostname "${request.hostname}". Falling back to passthrough strategy.`,
       )
       return new Passthrough()
     }
 
-    const domain = this.config.getDomainByHostname(request.hostname)!
-    const localePathSegment = this.getLocalePathSegment(url)
-
-    if (typeof localePathSegment === "undefined") {
-      const locale = this.negotiateLocaleForUser(request)
-
-      // We can be sure a locale with a matching domain exists because we already know that the
-      // localePathSegment is a valid locale or subpath
-      const expectedDomain = this.config.getDomain(locale)!
-
-      if (expectedDomain.hostname !== domain.hostname) {
-        return this.createRedirectToDomain(url, expectedDomain)
-      }
-
-      if (localeNeedsRedirect(url, domain, locale)) {
-        return this.createRedirectToLocale(url, domain, locale)
-      }
-
-      return new Passthrough()
+    const nextLocaleRedirects = getLocaleRedirects(domain)
+    const matchedRedirect = urlMatchRedirects(url, nextLocaleRedirects)
+    if (typeof matchedRedirect !== "undefined") {
+      return createRedirect(url, matchedRedirect)
     }
 
-    const pathSegmentLocale = this.getLocaleForLocalePathSegment(domain, localePathSegment)
-    const locale = pathSegmentLocale ?? domain.defaultLocale
-
-    if (getDomainsLocales([domain]).includes(localePathSegment)) {
-      return this.createRedirectToLocale(url, domain, locale)
+    const matchedLocaleSubpath = urlMatchSubpaths(url, domain.subpaths)
+    if (typeof matchedLocaleSubpath !== "undefined") {
+      return createRender(url, matchedLocaleSubpath, domain)
     }
 
-    const renderPath = createRenderPathname(url.pathname, localePathSegment, pathSegmentLocale)
-    return this.createRender(url, renderPath, locale)
-  }
-
-  private hasDomainForRequest(request: Request) {
-    return typeof this.config.getDomainByHostname(request.hostname) !== "undefined"
-  }
-
-  private negotiateLocaleForUser(request: Request) {
-    const domain = this.config.getDomainByHostname(request.hostname)!
-    return extractLocale(request, domain)
-  }
-
-  private createRender(url: URL, renderPath: string, locale: string): Render {
-    const queryParameters = getQueryParameters(url)
-
-    const query = {
-      ...queryParameters,
-      ...getRenderQueryParameters(locale, this.config),
+    const matchedDomain = urlMatchDomains(url, this.config.domains)
+    if (typeof matchedDomain !== "undefined") {
+      return createRedirectToDomain(url, matchedDomain)
     }
 
-    return new Render({
-      pathname: renderPath,
-      query,
-    })
-  }
-
-  private createRedirectToLocale(url: URL, domain: IDomain, locale: string) {
-    const { pathname, search, hash } = parse(formatUrl(url)) // We need the legacy Node.js API url format
-    const localeSubpath = getSubpathByLocale([domain], locale)!
-
-    const newPathname = prefixPathname(pathname!, localeSubpath.path)
-
-    const formattedPathname = format({
-      search,
-      hash,
-      pathname: newPathname,
-    })
-
-    return new PermanentRedirect({ location: formattedPathname })
-  }
-
-  private createRedirectToDomain(url: URL, domain: IDomain): PermanentRedirect {
-    const urlObject = replaceHostnameInUrl(url, domain.hostname)
-    const formattedUrl = format(urlObject)
-    return new PermanentRedirect({ location: formattedUrl })
-  }
-
-  private getLocaleForLocalePathSegment(domain: IDomain, localePathSegment: string) {
-    const subpath = getSubpathForLocalePathSegment(domain.subpaths, localePathSegment)
-    return subpath?.locale
-  }
-
-  private getLocalePathSegment(url: URL) {
-    const pathSegments = getPathSegments(url)
-    const [expectedLocalePathSegment] = pathSegments
-
-    if (typeof expectedLocalePathSegment === "undefined") {
-      return undefined
+    const negotiatedLocale = extractLocale(request, domain)
+    const negotiatedSubpath = getSubpathByLocale([domain], negotiatedLocale)!
+    if (subpathNeedsRedirect(url, negotiatedSubpath)) {
+      return createRedirect(url, { source: "/", destination: negotiatedSubpath.path })
     }
 
-    const containsLocaleRelatedSubpath =
-      this.config.locales.includes(expectedLocalePathSegment) ||
-      this.cleanLocaleSubpaths.includes(expectedLocalePathSegment)
-
-    if (!containsLocaleRelatedSubpath) {
-      return undefined
-    }
-
-    return expectedLocalePathSegment
+    return new Passthrough()
   }
 }

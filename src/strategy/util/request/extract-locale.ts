@@ -1,12 +1,12 @@
 import { Request } from "express"
 import { IDomain } from "../../../domain.interface"
 import { logger } from "../../../logger"
-import { getDomainsLocales } from "../../../util/get-domains-locales"
+import { getLocalesForDomains } from "../../../util/get-locales-for-domains"
 import { extractLocaleFromHeader } from "./extract-locale-from-header"
 import { extractNextLocaleCookie } from "./extract-next-locale-cookie"
 
 export const extractLocale = (request: Request, domain: IDomain) => {
-  const locales = getDomainsLocales([domain])
+  const locales = getLocalesForDomains([domain])
 
   if (locales.length === 1) {
     logger.debug(

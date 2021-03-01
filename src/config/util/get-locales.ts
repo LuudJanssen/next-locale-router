@@ -1,6 +1,6 @@
 import { IConfig } from "../../config.interface"
-import { getDomainsLocales } from "../../util/get-domains-locales"
+import { getLocalesForDomains } from "../../util/get-locales-for-domains"
 
 export const getLocales = (config: IConfig): string[] => {
-  return getDomainsLocales(config.domains)
+  return getLocalesForDomains(config.domains)
 }

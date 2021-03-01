@@ -1,5 +1,5 @@
 import { IDomain } from "../domain.interface"
-import { getDomainsLocales } from "./get-domains-locales"
+import { getLocalesForDomains } from "./get-locales-for-domains"
 
 export const domainContainsLocale = (domain: IDomain, locale: string) =>
-  getDomainsLocales([domain]).includes(locale)
+  getLocalesForDomains([domain]).includes(locale)

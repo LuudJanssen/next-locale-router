@@ -1,11 +1,11 @@
-import { Config } from "../../../config/config.class"
+import { IDomain } from "../../../domain.interface"
 import { RenderStrategyQueryParameters } from "../../strategy.type"
 
 export const getRenderQueryParameters = (
   locale: string,
-  config: Config,
+  domain: IDomain,
 ): RenderStrategyQueryParameters => {
-  const defaultLocale = config.toNextI18nConfig().defaultLocale
+  const defaultLocale = domain.defaultLocale
 
   return {
     __nextLocale: locale,

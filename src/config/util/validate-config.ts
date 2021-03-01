@@ -1,6 +1,6 @@
 import isLocale from "validator/lib/isLocale"
 import { IConfig } from "../../config.interface"
-import { getDomainsLocales } from "../../util/get-domains-locales"
+import { getLocalesForDomains } from "../../util/get-locales-for-domains"
 import { getObjectType } from "../../util/get-object-type"
 import { isObject } from "../../util/is-object"
 import { ConfigValidationError } from "./config-validation.error"
@@ -26,7 +26,7 @@ export const validateConfig = (config: any): config is IConfig => {
 
   config.domains.forEach((domain, index) => validateDomain(domain, `config.domains[${index}]`))
 
-  const locales = getDomainsLocales(config.domains)
+  const locales = getLocalesForDomains(config.domains)
   if (!locales.includes(config.defaultLocale)) {
     throw new ConfigValidationError(
       `The defaultLocale exported from the config file should be a locale that also exists in one of the domains. No domain with locale "${config.defaultLocale}" exists in config.domains.`,

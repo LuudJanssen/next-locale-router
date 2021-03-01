@@ -3,8 +3,8 @@ import { IDomain } from "../domain.interface"
 import { ISubpath } from "../subpath.interface"
 import { getDomainByHostname } from "../util/get-domain-by-hostname"
 import { getDomainByLocale } from "../util/get-domain-by-locale"
-import { getDomainsLocales } from "../util/get-domains-locales"
 import { getLocaleSubpathsForDomains } from "../util/get-locale-subpaths-for-domains"
+import { getLocalesForDomains } from "../util/get-locales-for-domains"
 import { getSubpathByLocale } from "../util/get-subpath-by-locale"
 import { getSubpathsLocales } from "../util/get-subpaths-locales"
 import { NextI18nConfig } from "./util/next-i18n-config.type"
@@ -19,7 +19,7 @@ export class Config {
     this.domains = config.domains
     this.defaultLocale = config.defaultLocale
 
-    this.locales = getDomainsLocales(this.domains)
+    this.locales = getLocalesForDomains(this.domains)
     this.localeSubpaths = getLocaleSubpathsForDomains(this.domains)
   }
 
