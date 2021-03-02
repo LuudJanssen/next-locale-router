@@ -12,12 +12,17 @@ import { NextI18nConfig } from "./util/next-i18n-config.type"
 export class Config {
   public readonly domains: IDomain[]
   public readonly defaultLocale: string
+
+  public readonly debug: boolean
+
   public readonly locales: string[]
   public readonly localeSubpaths: string[]
 
   constructor(config: IConfig) {
     this.domains = config.domains
     this.defaultLocale = config.defaultLocale
+
+    this.debug = config.debug ?? false
 
     this.locales = getLocalesForDomains(this.domains)
     this.localeSubpaths = getLocaleSubpathsForDomains(this.domains)
