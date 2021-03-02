@@ -1,7 +1,6 @@
 import chalk from "chalk"
 import { format, URL } from "url"
-import { StrategyType } from "../strategy/strategy-type.enum"
-import { Strategy } from "../strategy/strategy.type"
+import { Strategy, StrategyType } from "../strategy/strategy.type"
 import { isDebugMode } from "../util/is-debug-mode"
 import { Logger } from "./logger.class"
 

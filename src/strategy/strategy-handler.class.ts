@@ -2,8 +2,7 @@ import { NextFunction, Request, Response } from "express"
 import { default as NextServer } from "next/dist/next-server/server/next-server"
 import { format, parse } from "url"
 import { logger } from "../logger"
-import { StrategyType } from "./strategy-type.enum"
-import { PermanentRedirectStrategy, RenderStrategy, Strategy } from "./strategy.type"
+import { PermanentRedirectStrategy, RenderStrategy, Strategy, StrategyType } from "./strategy.type"
 import { getRequestUrl } from "./util/request/get-request-url"
 
 export class StrategyHandler {

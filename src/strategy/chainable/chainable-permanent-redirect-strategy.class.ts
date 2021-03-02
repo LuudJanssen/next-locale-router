@@ -1,5 +1,8 @@
-import { StrategyType } from "../strategy-type.enum"
-import { PermanentRedirectStrategy, PermanentRedirectStrategyData } from "../strategy.type"
+import {
+  PermanentRedirectStrategy,
+  PermanentRedirectStrategyData,
+  StrategyType,
+} from "../strategy.type"
 import { ChainableStrategy } from "./chainable-strategy.abstract"
 
 export class ChainablePermanentRedirectStrategy extends ChainableStrategy {

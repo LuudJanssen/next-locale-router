@@ -1,7 +1,6 @@
 import { URL } from "url"
 import { strategyLogger } from "../../logger"
-import { StrategyType } from "../strategy-type.enum"
-import { Strategy } from "../strategy.type"
+import { Strategy, StrategyType } from "../strategy.type"
 
 export abstract class ChainableStrategy {
   protected abstract readonly type: StrategyType
