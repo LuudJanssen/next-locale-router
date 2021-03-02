@@ -1,4 +1,3 @@
-import { NextConfig } from "next/dist/next-server/server/config"
 import { IConfig } from "../config.interface"
 import { IDomain } from "../domain.interface"
 import { ISubpath } from "../subpath.interface"
@@ -8,6 +7,7 @@ import { getLocaleSubpathsForDomains } from "../util/get-locale-subpaths-for-dom
 import { getLocalesForDomains } from "../util/get-locales-for-domains"
 import { getSubpathByLocale } from "../util/get-subpath-by-locale"
 import { getSubpathsLocales } from "../util/get-subpaths-locales"
+import { NextI18nConfig } from "./util/next-i18n-config.type"
 
 export class Config {
   public readonly domains: IDomain[]
@@ -35,13 +35,7 @@ export class Config {
     return getSubpathByLocale(this.domains, locale)
   }
 
-  public toNextConfig(): Partial<NonNullable<NextConfig>> {
-    return {
-      i18n: this.toNextI18nConfig(),
-    }
-  }
-
-  public toNextI18nConfig(): NonNullable<NextConfig["i18n"]> {
+  public toNextI18nConfig(): NextI18nConfig {
     const domains = this.domains.map((domain) => ({
       domain: domain.hostname,
       defaultLocale: domain.defaultLocale,
