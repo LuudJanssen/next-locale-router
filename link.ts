@@ -1,2 +1,2 @@
-export * from "./lib/link"
-export { default } from "./lib/link"
+export * from "./lib/client/link"
+export { default } from "./lib/client/link"

@@ -60,4 +60,12 @@ export class Config {
       domains,
     }
   }
+
+  public toObject(): IConfig {
+    return {
+      debug: this.debug,
+      domains: this.domains,
+      defaultLocale: this.defaultLocale,
+    }
+  }
 }
