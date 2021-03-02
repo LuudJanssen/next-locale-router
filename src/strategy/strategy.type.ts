@@ -1,5 +1,10 @@
 import { ParsedUrlQuery } from "querystring"
-import { StrategyType } from "./strategy-type.enum"
+
+export enum StrategyType {
+  PASSTHROUGH = "PASSTHROUGH",
+  PERMANENT_REDIRECT = "PERMANENT_REDIRECT",
+  RENDER = "RENDER",
+}
 
 export interface PassThroughStrategy {
   type: StrategyType.PASSTHROUGH

@@ -1,5 +1,4 @@
-import { StrategyType } from "../strategy-type.enum"
-import { RenderStrategy, RenderStrategyData } from "../strategy.type"
+import { RenderStrategy, RenderStrategyData, StrategyType } from "../strategy.type"
 import { ChainableStrategy } from "./chainable-strategy.abstract"
 
 export class ChainableRenderStrategy extends ChainableStrategy {

@@ -1,5 +1,4 @@
-import { StrategyType } from "../strategy-type.enum"
-import { PassThroughStrategy } from "../strategy.type"
+import { PassThroughStrategy, StrategyType } from "../strategy.type"
 import { ChainableStrategy } from "./chainable-strategy.abstract"
 
 export class ChainablePassThroughStrategy extends ChainableStrategy {
