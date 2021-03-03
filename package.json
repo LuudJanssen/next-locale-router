@@ -7,7 +7,9 @@
   "author": "Luud Janssen",
   "main": "lib/index.js",
   "scripts": {
+    "build": "tsc",
     "format": "prettier . --write",
+    "preversion": "yarn format && yarn build && git add -f lib/* && git commit -m \"build: add build output\"",
     "start": "tsc --watch"
   },
   "peerDependencies": {
