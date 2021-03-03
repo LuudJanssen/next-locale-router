@@ -59,7 +59,11 @@ export class StrategyInvestigator {
     const negotiatedLocale = negotiateLocale(request, domain)
     const negotiatedSubpath = getSubpathByLocale([domain], negotiatedLocale)!
     if (subpathNeedsRedirect(url, negotiatedSubpath)) {
-      return createRedirect(url, { source: "/", destination: negotiatedSubpath.path })
+      return createRedirect(url, {
+        source: "/",
+        destination: negotiatedSubpath.path,
+        locale: negotiatedLocale,
+      })
     }
 
     return new Passthrough()
