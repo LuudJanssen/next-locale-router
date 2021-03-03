@@ -131,6 +131,6 @@ The strategy investigator follows the following steps to determine the strategy:
 
 ## TODO's
 
-- [ ] Create custom `<Link>` component that supports the configuration.
+- [x] Create custom `<Link>` component that supports the configuration.
 - [ ] Allow rewriting sitemaps according to the configuration.
 - [ ] Add unit tests for the most critical strategies.
