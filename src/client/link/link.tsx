@@ -6,12 +6,19 @@ import { useLocaleRouterConfig } from "../config"
 import { getLocaleRewriterChild } from "./util/get-locale-rewriter-child"
 import { getLocaleRewriterHref } from "./util/get-locale-rewriter-href"
 import { LocaleRewriterProps, verifyLocaleRewriterProps } from "./util/locale-rewriter-props.type"
+import { wrapClickHandlerWithRewrite } from "./util/wrap-click-handler-with-rewrite"
 
 const LinkLocaleRewriter = forwardRef<HTMLElement, LocaleRewriterProps>(
   ({ children, ...props }, ref) => {
     // next/link forces these props on its child component
     // They'll only be available when this component is the child of next/link
-    const { onClick, href: originalHref, locale } = verifyLocaleRewriterProps(props)
+    const {
+      onClick: originalOnClick,
+      href: originalHref,
+      locale,
+      ...childProps
+    } = verifyLocaleRewriterProps(props)
+
     const { domains } = useLocaleRouterConfig()
     const redirects = domains.flatMap(getLocaleRedirects)
 
@@ -21,8 +28,9 @@ const LinkLocaleRewriter = forwardRef<HTMLElement, LocaleRewriterProps>(
 
     const href = getLocaleRewriterHref(originalHref, redirectForLocale)
     const child = getLocaleRewriterChild(children)
+    const onClick = wrapClickHandlerWithRewrite(originalOnClick, redirectForLocale)
 
-    return React.cloneElement(child, { ...props, href, ref })
+    return React.cloneElement(child, { ...childProps, onClick, href, ref })
   },
 )
 
