@@ -20,7 +20,7 @@ export const wrapClickHandlerWithRewrite = (
       return false
     }
 
-    window.history.replaceState(window.history.state, "", newUrl)
+    window.history.pushState(window.history.state, "", newUrl)
     return true
   }
 
