@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier . --write",
-    "postversion": "git checkout develop && git branch --delete release && git push && git push --tags",
+    "postversion": "git checkout develop && git branch -D release && git push && git push --tags",
     "preversion": "yarn format && yarn build && git checkout -b release && git add -f lib/* && git commit -m \"build: add build output\"",
     "start": "tsc --watch"
   },
