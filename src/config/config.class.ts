@@ -40,12 +40,6 @@ export class Config {
     return getSubpathByLocale(this.domains, locale)
   }
 
-  public toNextConfig(): Partial<NonNullable<NextConfig>> {
-    return {
-      i18n: this.toNextI18nConfig(),
-    }
-  }
-
   public toNextI18nConfig(): NonNullable<NextConfig["i18n"]> {
     const domains = this.domains.map((domain) => ({
       domain: domain.hostname,
