@@ -104,6 +104,8 @@ If you want some additional debugging output in your console, set the `NEXT_LOCA
 
 ## How does it work?
 
+### Express middleware
+
 The middleware method receives the request and has to decide on one of the following strategies:
 
 1. **PASSTHROUGH** - The request has to be forwarded to the next middleware. In the above `server.js` example, it should be handled by Next.js, not by the middleware.
@@ -128,6 +130,24 @@ The strategy investigator follows the following steps to determine the strategy:
 7. Is a redirect necessary for the preferred locale?
    - YES - **REDIRECT** to the subpath for the preferred locale.
 8. Nothing needs to be done on our side: **PASSTHROUGH**.
+
+### Custom `<Link>` component
+
+Besides having the server redirect URL's we also need to control client side routing. We do this by wrapping Next.js's `<Link>` component.
+
+1. `src/client/link/link.tsx` → We use Next.js own `<Link>` component, but provide our own `<LinkLocaleRewriter>` as its child and we make sure we pass the `href` prop.
+
+2. Next.js's `<Link>` component sets a couple of properties on its child, like the `href` prop and an `onClick` handler.
+
+3. We wrap the `onClick` handler to make sure we can execute some code whenever a user click a `<Link>`.
+
+4. `src/client/link/util/wrap-click-handler-with-rewrite.ts` → Whenever the user clicks on a `<Link>` we subscribe to Next.js router's `beforeHistoryChange` event which Next.js will fire.
+
+5. When this event fires we trigger our own `window.history.pushState` instead of the one that Next.js would execute. This simply sets the browser's URL to the value we want.
+
+6. How do we prevent Next.js from changing the URL? Well, here is where things get hacky. Check `src/client/link/util/disable-history-push-state-for-one-tick.ts`. This method overwrites the browser's `window.history.pushState` for one Javascript "tick". Because the `beforeHistoryChange` method is executed just before Next.js does its own history pushing, we point Next.js to an empty method. We use `setTimeout` to ensure we reinstate `window.history.pushState` in the next Javascript "tick".
+
+I know, it's pretty hacky, but it's the only way I could update te client URL's without rewriting Next.js's `<Link>` component or showing a URL change to the user.
 
 ## TODO's
 
