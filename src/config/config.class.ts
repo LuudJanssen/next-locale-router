@@ -62,4 +62,9 @@ export class Config {
       defaultLocale: this.defaultLocale,
     }
   }
+
+  public toNextI18NextConfig(): NonNullable<NextConfig["i18n"]> {
+    const { locales, defaultLocale } = this.toNextI18NextConfig()
+    return { locales, defaultLocale }
+  }
 }
