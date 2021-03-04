@@ -1,12 +1,14 @@
+import { parse, serialize } from "uri-js"
 import { updatePathnameWithRedirect } from "../../../strategy/util/url/update-pathname-with-redirect"
 import { IRedirect } from "../../../util/redirect.interface"
-import { parseHrefAsUrl } from "./parse-href-as-url"
 
 export const updateHrefWithRedirect = (href: string, redirect: IRedirect) => {
-  const { url, urlHadOrigin } = parseHrefAsUrl(href)
+  const uri = parse(href)
 
-  const pathname = updatePathnameWithRedirect(url.pathname, redirect)
-  url.pathname = pathname
+  const path = updatePathnameWithRedirect(uri.path, redirect)
 
-  return urlHadOrigin ? url.toString() : url.pathname + url.search
+  return serialize({
+    ...uri,
+    path,
+  })
 }

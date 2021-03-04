@@ -21,11 +21,14 @@
     "chalk": "^4.1.0",
     "express": "^4.17.1",
     "find-up": "^5.0.0",
+    "lodash": "^4.17.21",
     "negotiator": "^0.6.2",
+    "uri-js": "^4.4.1",
     "validator": "^13.5.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.11",
+    "@types/lodash": "^4.14.168",
     "@types/negotiator": "^0.6.1",
     "@types/node": "^14.14.31",
     "@types/react": "^16.14.3",
