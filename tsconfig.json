@@ -2,8 +2,8 @@
   "include": ["./src/**/*.ts", "./src/**/*.tsx"],
   "compilerOptions": {
     "jsx": "react",
-    "target": "ES2020",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "target": "ES2019",
+    "lib": ["ES2019", "DOM", "DOM.Iterable"],
     "allowJs": true,
     "checkJs": true,
     "skipLibCheck": true,
