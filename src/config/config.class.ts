@@ -54,4 +54,9 @@ export class Config {
       domains,
     }
   }
+
+  public toNextI18NextConfig(): NextI18nConfig {
+    const { locales, defaultLocale } = this.toNextI18NextConfig()
+    return { locales, defaultLocale }
+  }
 }
