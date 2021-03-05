@@ -1,6 +1,6 @@
 import { IRedirect } from "../../../util/redirect.interface"
-import { updateHrefWithRedirect } from "./update-href-with-redirect"
+import { updateHrefWithRewrite } from "../../util/update-href-with-redirect"
 
 export const getLocaleRewriterHref = (originalHref: string, redirectForLocale?: IRedirect) => {
-  return redirectForLocale ? updateHrefWithRedirect(originalHref, redirectForLocale) : originalHref
+  return redirectForLocale ? updateHrefWithRewrite(originalHref, redirectForLocale) : originalHref
 }
