@@ -56,13 +56,22 @@ module.exports = {
 Since this configuration file is a superset of the Next.js i18n config we can create the Next.js config for you. This will result in the following `next.config.js` file:
 
 ```javascript
-const { config } = require("@incentro/next-locale-router")
+const { withLocaleRouter } = require("@incentro/next-locale-router")
 
-module.exports = {
-  i18n: {
-    ...config.toNextI18nConfig(),
-  },
-}
+module.exports = withLocaleRouter()({
+  // Next.js config
+})
+```
+
+Or, if you're using [next-compose-plugins](https://www.npmjs.com/package/next-compose-plugins):
+
+```javascript
+const withPlugins = require("next-compose-plugins")
+const { withLocaleRouter } = require("@incentro/next-locale-router")
+
+module.exports = withPlugins([withLocaleRouter()], {
+  // Next.js config
+})
 ```
 
 ### Server middleware
@@ -98,11 +107,40 @@ app.prepare().then(() => {
 })
 ```
 
+### `<Link>` component
+
+On the client side we also need to rewrite the URL's. We do this by exposing a custom `<Link>` component, just like [Next.js's `<Link>` component](https://nextjs.org/docs/api-reference/next/link). It supports the exact same props as [next/link](https://nextjs.org/docs/api-reference/next/link), so you can just update your imports:
+
+```diff
+- import Link from "next/link"
++ import Link from "@incentro/next-locale-router/link"
+```
+
+### Client side router
+
+Just like the custom `<Link>` component, we also need to update our URL's when using the client side router directly. We do this by wrapping [next/router](https://nextjs.org/docs/api-reference/next/router). The only thing you need to do is to update your `next/router` imports:
+
+#### Global router usage
+
+```diff
+- import SingletonRouter from "next/router"
++ import SingletonRouter from "@incentro/next-locale-router/router"
+```
+
+#### `useRouter` hook
+
+```diff
+- import { useRouter } from "next/router"
++ import { useRouter } from "@incentro/next-locale-router/router"
+```
+
 ### Debugging
 
-If you want some additional debugging output in your console, set the `NEXT_LOCALE_ROUTER_DEBUG=true` environment variable before starting the node process, or set the `debug` property in your `i18n.config.js` file to `true`.
+If you want some additional debugging output in your console, set the `NEXT_PUBLIC_LOCALE_ROUTER_DEBUG=true` environment variable before starting the node process, or set the `debug` property in your `i18n.config.js` file to `true`.
 
 ## How does it work?
+
+### Express middleware
 
 The middleware method receives the request and has to decide on one of the following strategies:
 
@@ -129,8 +167,32 @@ The strategy investigator follows the following steps to determine the strategy:
    - YES - **REDIRECT** to the subpath for the preferred locale.
 8. Nothing needs to be done on our side: **PASSTHROUGH**.
 
+### Custom `<Link>` component
+
+Besides having the server redirect URL's we also need to control client side routing. We do this by wrapping Next.js's `<Link>` component.
+
+1. `src/client/link/link.tsx` → We use Next.js own `<Link>` component, but provide our own `<LinkLocaleRewriter>` as its child and we make sure we pass the `href` prop.
+
+2. Next.js's `<Link>` component sets a couple of properties on its child, like the `href` prop and an `onClick` handler.
+
+3. We wrap the `onClick` handler to make sure we can execute some code whenever a user click a `<Link>`.
+
+4. `src/client/link/util/wrap-click-handler-with-rewrite.ts` → Whenever the user clicks on a `<Link>` we subscribe to Next.js router's `beforeHistoryChange` event which Next.js will fire.
+
+5. When this event fires we trigger our own `window.history.pushState` instead of the one that Next.js would execute. This simply sets the browser's URL to the value we want.
+
+6. How do we prevent Next.js from changing the URL? Well, here is where things get hacky. Check `src/client/link/util/disable-history-push-state-for-one-tick.ts`. This method overwrites the browser's `window.history.pushState` for one Javascript "tick". Because the `beforeHistoryChange` method is executed just before Next.js does its own history pushing, we point Next.js to an empty method. We use `setTimeout` to ensure we reinstate `window.history.pushState` in the next Javascript "tick".
+
+I know, it's pretty hacky, but it's the only way I could update te client URL's without rewriting Next.js's `<Link>` component or showing a URL change to the user.
+
+### Client side router
+
+The wrapper of `next/router` works about the same as the `<Link>` component. We temporarily disable `window.history.pushState` for Next.js's own router and execute the state update ourselves. The only difference is that in this case we wrap the `router.push` and `router.replace` methods using a [proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy). You can find the code for this at `src/client/router/util/wrap-router-with-rewrites.ts`.
+
 ## TODO's
 
-- [ ] Create custom `<Link>` component that supports the configuration.
+- [x] Create custom `<Link>` component that supports the configuration.
+- [x] Create wrapper around `next/router`
+- [ ] Allow creating redirect props for usage in `getServerSideProps()` and `getStaticProps()`
 - [ ] Allow rewriting sitemaps according to the configuration.
 - [ ] Add unit tests for the most critical strategies.

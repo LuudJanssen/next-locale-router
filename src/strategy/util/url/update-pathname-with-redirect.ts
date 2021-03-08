@@ -1,12 +1,13 @@
+import isNil from "lodash/isNil"
 import { IRedirect } from "../../../util/redirect.interface"
 import { cleanPathSegment } from "./clean-path-segment"
 import { getPathSegments } from "./get-path-segments"
 
 export const updatePathnameWithRedirect = (
-  pathname: string | null,
+  pathname: string | undefined | null,
   redirect: IRedirect,
 ): string => {
-  if (pathname === null) {
+  if (isNil(pathname)) {
     return redirect.destination
   }
 

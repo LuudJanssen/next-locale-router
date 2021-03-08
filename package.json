@@ -1,13 +1,16 @@
 {
   "name": "@incentro/next-locale-router",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "private": true,
   "license": "UNLICENSED",
   "repository": "https://bitbucket.org/luud-incentro/leen-bakker-next.js-locale-router",
   "author": "Luud Janssen",
   "main": "lib/index.js",
   "scripts": {
+    "build": "tsc",
     "format": "prettier . --write",
+    "postversion": "git push && git push --tags",
+    "preversion": "yarn format && yarn build && git add -f lib/* && git commit -m \"build: add build output\"",
     "start": "tsc --watch"
   },
   "peerDependencies": {
@@ -18,11 +21,14 @@
     "chalk": "^4.1.0",
     "express": "^4.17.1",
     "find-up": "^5.0.0",
+    "lodash": "^4.17.21",
     "negotiator": "^0.6.2",
+    "uri-js": "^4.4.1",
     "validator": "^13.5.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.11",
+    "@types/lodash": "^4.14.168",
     "@types/negotiator": "^0.6.1",
     "@types/node": "^14.14.31",
     "@types/react": "^16.14.3",

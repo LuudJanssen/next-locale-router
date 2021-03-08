@@ -4,7 +4,6 @@ import { logger } from "../../logger"
 
 export const getConfigLocation = (): string => {
   const location = findUp.sync(CONFIG_FILENAME)
-  console.log(location)
 
   if (typeof location === "undefined") {
     throw logger.error(
