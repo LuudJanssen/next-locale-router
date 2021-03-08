@@ -109,7 +109,7 @@ app.prepare().then(() => {
 
 ### Debugging
 
-If you want some additional debugging output in your console, set the `NEXT_LOCALE_ROUTER_DEBUG=true` environment variable before starting the node process, or set the `debug` property in your `i18n.config.js` file to `true`.
+If you want some additional debugging output in your console, set the `NEXT_PUBLIC_LOCALE_ROUTER_DEBUG=true` environment variable before starting the node process, or set the `debug` property in your `i18n.config.js` file to `true`.
 
 ## How does it work?
 
