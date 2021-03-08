@@ -107,6 +107,15 @@ app.prepare().then(() => {
 })
 ```
 
+### `<Link>` component
+
+On the client side we also need to rewrite the URL's. We do this by exposing a custom `<Link>` component, just like [Next.js's `<Link>` component](https://nextjs.org/docs/api-reference/next/link). It supports the exact same props as [next/link](https://nextjs.org/docs/api-reference/next/link), so you can just update your imports:
+
+```diff
+- import Link from "next/link"
++ import Link from "@incentro/next-locale-router"
+```
+
 ### Debugging
 
 If you want some additional debugging output in your console, set the `NEXT_PUBLIC_LOCALE_ROUTER_DEBUG=true` environment variable before starting the node process, or set the `debug` property in your `i18n.config.js` file to `true`.
