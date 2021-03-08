@@ -185,6 +185,10 @@ Besides having the server redirect URL's we also need to control client side rou
 
 I know, it's pretty hacky, but it's the only way I could update te client URL's without rewriting Next.js's `<Link>` component or showing a URL change to the user.
 
+### Client side router
+
+The wrapper of `next/router` works about the same as the `<Link>` component. We temporarily disable `window.history.pushState` for Next.js's own router and execute the state update ourselves. The only difference is that in this case we wrap the `router.push` and `router.replace` methods using a [proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy). You can find the code for this at `src/client/router/util/wrap-router-with-rewrites.ts`.
+
 ## TODO's
 
 - [x] Create custom `<Link>` component that supports the configuration.
