@@ -113,7 +113,25 @@ On the client side we also need to rewrite the URL's. We do this by exposing a c
 
 ```diff
 - import Link from "next/link"
-+ import Link from "@incentro/next-locale-router"
++ import Link from "@incentro/next-locale-router/link"
+```
+
+### Client side router
+
+Just like the custom `<Link>` component, we also need to update our URL's when using the client side router directly. We do this by wrapping [next/router](https://nextjs.org/docs/api-reference/next/router). The only thing you need to do is to update your `next/router` imports:
+
+#### Global router usage
+
+```diff
+- import SingletonRouter from "next/router"
++ import SingletonRouter from "@incentro/next-locale-router/router"
+```
+
+#### `useRouter` hook
+
+```diff
+- import { useRouter } from "next/router"
++ import { useRouter } from "@incentro/next-locale-router/router"
 ```
 
 ### Debugging
