@@ -192,5 +192,7 @@ The wrapper of `next/router` works about the same as the `<Link>` component. We 
 ## TODO's
 
 - [x] Create custom `<Link>` component that supports the configuration.
+- [x] Create wrapper around `next/router`
+- [ ] Allow creating redirect props for usage in `getServerSideProps()` and `getStaticProps()`
 - [ ] Allow rewriting sitemaps according to the configuration.
 - [ ] Add unit tests for the most critical strategies.
