@@ -1,13 +1,10 @@
 import { IConfig } from "../../config.interface"
 import { logger } from "../../logger"
-import { isDebugMode } from "../../util/is-debug-mode"
 import { ConfigValidationError } from "./config-validation.error"
 import { validateConfig } from "./validate-config"
 
 export const readConfig = (path: string): IConfig => {
-  if (isDebugMode()) {
-    logger.debug(`Reading config from "${path}"`)
-  }
+  logger.debug(`Reading config from "${path}"`)
 
   let config: any
   try {
