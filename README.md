@@ -2,8 +2,8 @@
 
 Next.js v10 introduced [internationalized routing](https://nextjs.org/docs/advanced-features/i18n-routing) support. However, it's limited:
 
-1. It requires a `defaultLocale` for subpaths, meaning always one locale will be available on `/` instead of `/${locale}`.
-2. It doesn't allow changing the subpaths for a locale. For example the `nl-BE` locale will be available under `/nl-BE`, it can't be changed to `/nl` for example.
+1. It requires a `defaultLocale` for subpaths, meaning always one locale will be available on `/` instead of `/${locale}`. [next.js#18419](https://github.com/vercel/next.js/discussions/18419)
+2. It doesn't allow changing the subpaths for a locale. For example the `nl-BE` locale will be available under `/nl-BE`, it can't be changed to `/nl` for example. [next.js#17078 (comment)](https://github.com/vercel/next.js/discussions/17078#discussioncomment-357232)
 
 It also contains a couple of bugs where the locale of domain X (`/nl-BE`) is also available under domain Y. So accessing domain-y.com/nl-BE works, even though `nl-BE` is not part of domain Y's configuration.
 
