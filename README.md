@@ -134,6 +134,24 @@ Just like the custom `<Link>` component, we also need to update our URL's when u
 + import { useRouter } from "@incentro/next-locale-router/router"
 ```
 
+### `getServerSideProps` and `getStaticProps` redirects
+
+When redirecting with `getServerSideProps` or `getStaticProps` it's important to redirect to the right destination for the locale to prevent double redirects or even worse, a redirect loop. When creating redirects in `getServerSideProps` or `getStaticProps` you can use the `addLocaleToRedirect` method exported by this package.
+
+```typescript
+import { addLocaleToRedirect } from "@incentro/next-locale-router"
+
+export const getServerSideProps: GetServerSideProps = ({ locale }) => {
+  // This method rewrites the /about route to the right route for the given locale, e.g. `/nl/about`
+  const redirect = addLocaleToRedirect({
+    destination: '/about',
+    permanent: true,
+  }, locale)
+
+  return { redirect }
+}
+```
+
 ### Debugging
 
 If you want some additional debugging output in your console, set the `NEXT_PUBLIC_LOCALE_ROUTER_DEBUG=true` environment variable before starting the node process, or set the `debug` property in your `i18n.config.js` file to `true`.
