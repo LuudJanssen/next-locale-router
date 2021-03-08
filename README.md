@@ -56,13 +56,22 @@ module.exports = {
 Since this configuration file is a superset of the Next.js i18n config we can create the Next.js config for you. This will result in the following `next.config.js` file:
 
 ```javascript
-const { config } = require("@incentro/next-locale-router")
+const { withLocaleRouter } = require("@incentro/next-locale-router")
 
-module.exports = {
-  i18n: {
-    ...config.toNextI18nConfig(),
-  },
-}
+module.exports = withLocaleRouter()({
+  // Next.js config
+})
+```
+
+Or, if you're using [next-compose-plugins](https://www.npmjs.com/package/next-compose-plugins):
+
+```javascript
+const withPlugins = require("next-compose-plugins")
+const { withLocaleRouter } = require("@incentro/next-locale-router")
+
+module.exports = withPlugins([withLocaleRouter()], {
+  // Next.js config
+})
 ```
 
 ### Server middleware
