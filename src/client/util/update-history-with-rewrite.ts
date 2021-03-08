@@ -1,8 +1,8 @@
+import { updateUrlWithRedirect } from "../../strategy/util/url/update-url-with-redirect"
 import { IRedirect } from "../../util/redirect.interface"
-import { updateHrefWithRewrite } from "./update-href-with-redirect"
 
 export const updateHistoryWithRewrite = (url: string, rewrite: IRedirect): boolean => {
-  const newUrl = updateHrefWithRewrite(url, rewrite)
+  const newUrl = updateUrlWithRedirect(url, rewrite)
 
   console.log("constructed new url", newUrl)
 
