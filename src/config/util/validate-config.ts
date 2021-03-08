@@ -24,6 +24,18 @@ export const validateConfig = (config: any): config is IConfig => {
     )
   }
 
+  if (typeof config.debug !== "undefined" && typeof config.debug !== "boolean") {
+    throw new ConfigValidationError(
+      `The debug flag has to be either undefined or a boolean. Found config.debug to be "${typeof config.debug}".`,
+    )
+  }
+
+  if (typeof config.debug !== "undefined" && typeof config.ignore !== "function") {
+    throw new ConfigValidationError(
+      `The ignore option has to be either undefined or a boolean. Found config.ignore to be "${typeof config.ignore}"`,
+    )
+  }
+
   config.domains.forEach((domain, index) => validateDomain(domain, `config.domains[${index}]`))
 
   const locales = getLocalesForDomains(config.domains)

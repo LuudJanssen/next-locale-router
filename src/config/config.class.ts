@@ -8,12 +8,15 @@ import { getLocaleSubpathsForDomains } from "../util/get-locale-subpaths-for-dom
 import { getLocalesForDomains } from "../util/get-locales-for-domains"
 import { getSubpathByLocale } from "../util/get-subpath-by-locale"
 import { getSubpathsLocales } from "../util/get-subpaths-locales"
+import { alwaysReturn } from "./util/always-return"
+import { IgnoreFunction } from "./util/ignore-option.type"
 
 export class Config {
   public readonly domains: IDomain[]
   public readonly defaultLocale: string
 
   public readonly debug: boolean
+  public readonly ignore: IgnoreFunction
 
   public readonly locales: string[]
   public readonly localeSubpaths: string[]
@@ -23,6 +26,7 @@ export class Config {
     this.defaultLocale = config.defaultLocale
 
     this.debug = config.debug ?? false
+    this.ignore = config.ignore ?? alwaysReturn(false)
 
     this.locales = getLocalesForDomains(this.domains)
     this.localeSubpaths = getLocaleSubpathsForDomains(this.domains)
@@ -66,5 +70,9 @@ export class Config {
   public toNextI18NextConfig(): NonNullable<NextConfig["i18n"]> {
     const { locales, defaultLocale } = this.toNextI18NextConfig()
     return { locales, defaultLocale }
+  }
+
+  public shouldIgnore(url: URL): boolean {
+    return this.ignore(url)
   }
 }

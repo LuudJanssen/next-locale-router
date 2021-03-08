@@ -32,6 +32,10 @@ export class StrategyInvestigator {
       return new Passthrough()
     }
 
+    if (this.config.shouldIgnore(url)) {
+      return new Passthrough()
+    }
+
     const domain = this.config.getDomainByHostname(request.hostname)!
     if (typeof domain === "undefined") {
       logger.error(

@@ -74,6 +74,36 @@ module.exports = withPlugins([withLocaleRouter()], {
 })
 ```
 
+#### Additional options
+
+Next to the `config.domains` and `config.defaultLocale` options (which are **required**), you have the following options:
+
+##### `config.debug`
+
+Can be used instead of the `NEXT_PUBLIC_LOCALE_ROUTER_DEBUG` environment variable to put the router into debug mode and display additional logging.
+
+##### `config.ignore`
+
+A function that allows you to force certain routes to be ignored by the locale router. It receives a [parsed url](https://developer.mozilla.org/en-US/docs/Web/API/URL) as its parameter and should return a boolean:
+
+```javascript
+const ignore = (url) => {
+  return url.pathname === "favicon.ico"
+}
+
+module.exports = {
+  domains,
+  defaultLocale,
+  ignore: (url) => ignore,
+}
+```
+
+A common use case for this ignore parameter is to ignore routes in the `public`. Currently, `next-locale-router` doesn't ignore items in the `public` directory, because we can't easily determine what is a `pages` route and what is a `public` route and we don't want to rewrite Next.js's internals. For most public routes, this isn't a problem, because the routes are still accessible.
+
+Take for example the favicon (`favicon.ico`). When a user is accessing the `/favicon.ico` route, but should be on the Dutch locale at `/nl/`, the request will be redirected to `/nl/favico.ico` and the image will still successfully be resolved.
+
+The problem here is that our server will be handing out a lot of redirects and the client needs to do unnecessary redirects. You can add known public routes to the `config.ignore` option to prevent these redirects.
+
 ### Server middleware
 
 Create a `server.js` file in the root of the project, as per [the Next.js standard](https://nextjs.org/docs/advanced-features/custom-server). This example is an adapation of the [custom-server-express Next.js template](https://github.com/vercel/next.js/tree/canary/examples/custom-server-express):
@@ -172,18 +202,20 @@ The strategy investigator follows the following steps to determine the strategy:
 
 1. Is the request an internal Next.js request (starting with `_next` for example)?
    - YES - Return the **PASSTHROUGH** strategy.
-2. Do we have a domain config for the hostname for this request?
+2. Do we need to ignore the URL due to the `config.ignore` option?
+   - YES - Return the **PASSTHROUGH** strategy.
+3. Do we have a domain config for the hostname for this request?
    - NO - Log an error and return the **PASSTHROUGH** strategy.
-3. Is the user trying to access an original Next.js locale route which we want to rewrite? For example `/nl-BE/` to `/nl/`.
+4. Is the user trying to access an original Next.js locale route which we want to rewrite? For example `/nl-BE/` to `/nl/`.
    - YES - **REDIRECT** to the subpath we defined.
-4. Is this a valid locale subpath for the given domain?
+5. Is this a valid locale subpath for the given domain?
    - YES - **RENDER** the page the user is accessing with the matching locale.
-5. Is this a valid locale subpath for a different domain?
+6. Is this a valid locale subpath for a different domain?
    - YES - **REDIRECT** to the other domain.
-6. The user isn't accessing a language specific route, so we need to check the user's preference and determine the locale he prefers. This uses the browsers `Accept-Language` header, as well checking for the `NEXT_LOCALE` cookie set by Next.js. Otherwise it falls back to the `defaultLanguage` for the given domain.
-7. Is a redirect necessary for the preferred locale?
+7. The user isn't accessing a language specific route, so we need to check the user's preference and determine the locale he prefers. This uses the browsers `Accept-Language` header, as well checking for the `NEXT_LOCALE` cookie set by Next.js. Otherwise it falls back to the `defaultLanguage` for the given domain.
+8. Is a redirect necessary for the preferred locale?
    - YES - **REDIRECT** to the subpath for the preferred locale.
-8. Nothing needs to be done on our side: **PASSTHROUGH**.
+9. Nothing needs to be done on our side: **PASSTHROUGH**.
 
 ### Custom `<Link>` component
 
@@ -214,3 +246,5 @@ The wrapper of `next/router` works about the same as the `<Link>` component. We 
 - [ ] Allow creating redirect props for usage in `getServerSideProps()` and `getStaticProps()`
 - [ ] Allow rewriting sitemaps according to the configuration.
 - [ ] Add unit tests for the most critical strategies.
+- [ ] Extend option to ignore (public) routes
+- [ ] Automatically ignore routes in the `public` directory?
