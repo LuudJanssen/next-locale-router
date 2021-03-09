@@ -165,7 +165,7 @@ Just like the custom `<Link>` component, we also need to update our URL's when u
 When redirecting with `getServerSideProps` or `getStaticProps` it's important to redirect to the right destination for the locale to prevent double redirects or even worse, a redirect loop. When creating redirects in `getServerSideProps` or `getStaticProps` you can use the `addLocaleToRedirect` method exported by this package.
 
 ```typescript
-import { addLocaleToRedirect } from "@incentro/next-locale-router"
+import { addLocaleToRedirect } from "@incentro/next-locale-router/props"
 
 export const getServerSideProps: GetServerSideProps = ({ locale }) => {
   // This method rewrites the /about route to the right route for the given locale, e.g. `/nl/about`
@@ -175,6 +175,30 @@ export const getServerSideProps: GetServerSideProps = ({ locale }) => {
   }, locale)
 
   return { redirect }
+}
+```
+
+### Utility methods
+
+This project also exposes a utility method for stripping the locale from a path. This can be helpful to test for certain routes in your code. For example when checking the url of the `getServerSideProps` or `getStaticProps` context you'll see it includes the locale:
+
+```typescript
+import { GetServerSideProps } from "next"
+
+const getServerSideProps: GetServerSideProps = ({ resolvedUrl }) => {
+  console.log(resolvedUrl) // This would log "/nl/about" for the "pages/about.tsx" page
+}
+```
+
+We can use the `removeLocaleFromPath` method from `@incentro/next-locale-router/props` to remove the `/nl` prefix:
+
+```typescript
+import { GetServerSideProps } from "next"
+import { removeLocaleFromPath } from "@incentro/next-locale-router/props"
+
+const getServerSideProps: GetServerSideProps = ({ resolvedUrl }) => {
+  const urlWithoutLocale = removeLocaleFromPath(resolvedUrl)
+  console.log(urlWithoutLocale) // This would log "/about" for the "pages/about.tsx" page
 }
 ```
 
