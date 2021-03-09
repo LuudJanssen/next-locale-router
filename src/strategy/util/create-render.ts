@@ -4,6 +4,7 @@ import { ISubpath } from "../../subpath.interface"
 import { ChainableRenderStrategy as Render } from "../chainable"
 import { getQueryParameters } from "./url/get-query-parameters"
 import { getRenderQueryParameters } from "./url/get-render-query-parameters"
+import { stripLocalePathSegment } from "./url/strip-locale-path-segment"
 import { stripTrailingSlash } from "./url/strip-trailing-slash"
 
 export const createRender = (url: URL, subpath: ISubpath, domain: IDomain): Render => {
@@ -14,8 +15,7 @@ export const createRender = (url: URL, subpath: ISubpath, domain: IDomain): Rend
     ...getRenderQueryParameters(subpath.locale, domain),
   }
 
-  const normalizedPathname = url.pathname.endsWith("/") ? url.pathname : url.pathname + "/"
-  const pathname = stripTrailingSlash(normalizedPathname.replace(subpath.path, "/"))
+  const pathname = stripTrailingSlash(stripLocalePathSegment(url.pathname, subpath))
 
   return new Render({
     pathname,
