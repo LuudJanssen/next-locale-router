@@ -1,0 +1,5 @@
+{
+  "name": "@incentro/next-locale-router--config",
+  "main": "./index.ts",
+  "browser": "./browser-entrypoint.ts"
+}
