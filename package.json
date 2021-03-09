@@ -10,7 +10,7 @@
     "build": "tsc",
     "format": "prettier . --write",
     "postversion": "git push && git push --tags",
-    "preversion": "yarn format && yarn build && git add -f lib/* && git commit -m --allow-empty \"build: add build output\"",
+    "preversion": "yarn format && yarn build && git add -f lib/* && git commit -m \"build: add build output\" --allow-empty",
     "start": "tsc --watch"
   },
   "peerDependencies": {
