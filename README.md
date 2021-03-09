@@ -78,10 +78,6 @@ module.exports = withPlugins([withLocaleRouter()], {
 
 Next to the `config.domains` and `config.defaultLocale` options (which are **required**), you have the following options:
 
-##### `config.debug`
-
-Can be used instead of the `NEXT_PUBLIC_LOCALE_ROUTER_DEBUG` environment variable to put the router into debug mode and display additional logging.
-
 ##### `config.ignore`
 
 A function that allows you to force certain routes to be ignored by the locale router. It receives a [parsed url](https://developer.mozilla.org/en-US/docs/Web/API/URL) as its parameter and should return a boolean:
@@ -184,7 +180,7 @@ export const getServerSideProps: GetServerSideProps = ({ locale }) => {
 
 ### Debugging
 
-If you want some additional debugging output in your console, set the `NEXT_PUBLIC_LOCALE_ROUTER_DEBUG=true` environment variable before starting the node process, or set the `debug` property in your `i18n.config.js` file to `true`.
+If you want some additional debugging output in your console, set the `NEXT_PUBLIC_LOCALE_ROUTER_DEBUG=true` environment variable before starting the node process.
 
 ## How does it work?
 
@@ -243,7 +239,7 @@ The wrapper of `next/router` works about the same as the `<Link>` component. We 
 
 - [x] Create custom `<Link>` component that supports the configuration.
 - [x] Create wrapper around `next/router`
-- [ ] Allow creating redirect props for usage in `getServerSideProps()` and `getStaticProps()`
+- [x] Allow creating redirect props for usage in `getServerSideProps()` and `getStaticProps()`
 - [ ] Allow rewriting sitemaps according to the configuration.
 - [ ] Add unit tests for the most critical strategies.
 - [ ] Extend option to ignore (public) routes
