@@ -3,7 +3,7 @@
   "version": "1.1.2",
   "private": false,
   "license": "UNLICENSED",
-  "repository": "https://bitbucket.org/luud-incentro/leen-bakker-next.js-locale-router",
+  "repository": "https://github.com/luudjanssen/next-locale-router",
   "author": "Luud Janssen",
   "main": "lib/index.js",
   "scripts": {
