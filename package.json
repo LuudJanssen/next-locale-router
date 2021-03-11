@@ -8,9 +8,10 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
+    "clean": "rm -rf lib",
     "format": "prettier . --write",
     "postversion": "git push && git push --tags",
-    "preversion": "yarn format && yarn build",
+    "preversion": "yarn clean && yarn build",
     "start": "tsc --watch"
   },
   "peerDependencies": {
