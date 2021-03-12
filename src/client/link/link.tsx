@@ -1,6 +1,6 @@
 import NextLink, { LinkProps } from "next/link"
 import { useRouter } from "next/router"
-import React, { forwardRef, FunctionComponent } from "react"
+import React, { forwardRef, FunctionComponent, MouseEventHandler } from "react"
 import { useLocaleRedirect } from "../util/use-locale-redirect.hook"
 import { getLocaleRewriterChild } from "./util/get-locale-rewriter-child"
 import { getLocaleRewriterHref } from "./util/get-locale-rewriter-href"
@@ -21,7 +21,19 @@ const LinkLocaleRewriter = forwardRef<HTMLElement, LocaleRewriterProps>(
     const redirectForLocale = useLocaleRedirect(locale)
     const href = getLocaleRewriterHref(originalHref, redirectForLocale)
     const child = getLocaleRewriterChild(children)
-    const onClick = wrapClickHandlerWithRewrite(originalOnClick, redirectForLocale)
+    const nextOnClick = wrapClickHandlerWithRewrite(originalOnClick, redirectForLocale)
+
+    const onClick: MouseEventHandler = (event) => {
+      if (child.props && typeof child.props.onClick === "function") {
+        child.props.onClick(event)
+      }
+
+      if (event.defaultPrevented) {
+        return
+      }
+
+      nextOnClick(event)
+    }
 
     return React.cloneElement(child, { ...childProps, onClick, href, ref })
   },
