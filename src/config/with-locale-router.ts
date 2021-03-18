@@ -12,5 +12,6 @@ export const withLocaleRouter = () => (
       ...(nextConfig.publicRuntimeConfig ?? {}),
       [CONFIG_RUNTIME_KEY]: config.toObject(),
     },
+    trailingSlash: config.trailingSlash,
   }
 }

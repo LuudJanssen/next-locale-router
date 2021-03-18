@@ -14,6 +14,7 @@ export class Config {
   public readonly defaultLocale: string
 
   public readonly ignore: IgnoreFunction
+  public readonly trailingSlash: boolean
 
   public readonly locales: string[]
   public readonly localeSubpaths: string[]
@@ -23,6 +24,7 @@ export class Config {
     this.defaultLocale = config.defaultLocale
 
     this.ignore = config.ignore ?? alwaysReturn(false)
+    this.trailingSlash = config.trailingSlash ?? false
 
     this.locales = getLocalesForDomains(this.domains)
     this.localeSubpaths = getLocaleSubpathsForDomains(this.domains)
