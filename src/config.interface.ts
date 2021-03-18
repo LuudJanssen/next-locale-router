@@ -5,4 +5,5 @@ export interface IConfig {
   domains: IDomain[]
   defaultLocale: string
   ignore?: IgnoreOption
+  trailingSlash?: boolean
 }
