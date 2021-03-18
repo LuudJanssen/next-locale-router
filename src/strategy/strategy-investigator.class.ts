@@ -27,7 +27,7 @@ export class StrategyInvestigator {
 
   private getStrategy(request: Request): ChainableStrategy {
     const url = getRequestUrl(request)
-    const hasTrailingSlash = url.href.endsWith("/")
+    const hasTrailingSlash = url.pathname.endsWith("/")
     const nextConfigTrailingSlash = this.config.trailingSlash
 
     if (hasTrailingSlash !== nextConfigTrailingSlash) {
