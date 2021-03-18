@@ -30,7 +30,7 @@ export class StrategyInvestigator {
     const hasTrailingSlash = url.href.endsWith("/")
     const nextConfigTrailingSlash = this.config.trailingSlash
 
-    if (hasTrailingSlash && !nextConfigTrailingSlash) {
+    if (hasTrailingSlash !== nextConfigTrailingSlash) {
       return new Passthrough()
     }
 
