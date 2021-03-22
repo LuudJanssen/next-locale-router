@@ -4,14 +4,12 @@ import config from "./index"
 
 export const withLocaleRouter = () => (
   nextConfig: Partial<NextConfig> = {},
-): Partial<NextConfig> => {
-  return {
-    ...nextConfig,
-    i18n: config.toNextI18nConfig(),
-    publicRuntimeConfig: {
-      ...(nextConfig.publicRuntimeConfig ?? {}),
-      [CONFIG_RUNTIME_KEY]: config.toObject(),
-    },
-    trailingSlash: config.trailingSlash,
-  }
-}
+): Partial<NextConfig> => ({
+  ...nextConfig,
+  i18n: config.toNextI18nConfig(),
+  publicRuntimeConfig: {
+    ...(nextConfig.publicRuntimeConfig ?? {}),
+    [CONFIG_RUNTIME_KEY]: config.toObject(),
+  },
+  trailingSlash: config.trailingSlash,
+})
