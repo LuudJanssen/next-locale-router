@@ -15,13 +15,20 @@ const LinkLocaleRewriter = forwardRef<HTMLElement, LocaleRewriterProps>(
       onClick: originalOnClick,
       href: originalHref,
       locale,
+      replace,
       ...childProps
     } = verifyLocaleRewriterProps(props)
 
     const redirectForLocale = useLocaleRedirect(locale)
     const href = getLocaleRewriterHref(originalHref, redirectForLocale)
     const child = getLocaleRewriterChild(children)
-    const nextOnClick = wrapClickHandlerWithRewrite(originalOnClick, redirectForLocale)
+    const historyMethod = replace ? "replaceState" : "pushState"
+
+    const nextOnClick = wrapClickHandlerWithRewrite(
+      originalOnClick,
+      historyMethod,
+      redirectForLocale,
+    )
 
     const onClick: MouseEventHandler = (event) => {
       if (child.props && typeof child.props.onClick === "function") {
@@ -44,7 +51,9 @@ export const Link: FunctionComponent<LinkProps> = ({ children, ...props }) => {
 
   return (
     <NextLink {...props} passHref>
-      <LinkLocaleRewriter locale={props.locale || currentLocale}>{children}</LinkLocaleRewriter>
+      <LinkLocaleRewriter locale={props.locale || currentLocale} replace={props.replace ?? false}>
+        {children}
+      </LinkLocaleRewriter>
     </NextLink>
   )
 }

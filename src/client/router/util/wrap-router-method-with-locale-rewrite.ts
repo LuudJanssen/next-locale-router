@@ -12,6 +12,7 @@ export const wrapRouterMethodWithLocaleRewrite = <TMethod extends WrappableRoute
   const [url, as, options] = args
   const redirectForLocale = useLocaleRedirect(router.locale)
   const asWithLocale = updateAsParameterWithLocale(as, redirectForLocale)
-  addRewriteToRouterOnce(router, redirectForLocale)
+  const historyMethod = method === "push" ? "pushState" : "replaceState"
+  addRewriteToRouterOnce(router, redirectForLocale, historyMethod)
   return router[method](url, asWithLocale, options)
 }

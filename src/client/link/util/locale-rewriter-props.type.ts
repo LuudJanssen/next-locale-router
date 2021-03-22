@@ -5,6 +5,7 @@ interface NextLinkChildProps {
 
 export type LocaleRewriterProps = React.PropsWithChildren<Partial<NextLinkChildProps>> & {
   locale?: string
+  replace: boolean
 }
 
 type LocaleRewriterPropsWithoutChildren = Omit<LocaleRewriterProps, "children">
@@ -13,6 +14,7 @@ export const verifyLocaleRewriterProps = ({
   locale,
   href,
   onClick,
+  replace,
 }: LocaleRewriterPropsWithoutChildren): Required<LocaleRewriterPropsWithoutChildren> => {
   if (typeof locale === "undefined") {
     throw new Error(
@@ -36,5 +38,6 @@ export const verifyLocaleRewriterProps = ({
     locale,
     href,
     onClick,
+    replace,
   }
 }
