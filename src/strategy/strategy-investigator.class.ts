@@ -16,6 +16,7 @@ import { subpathNeedsRedirect } from "./util/url/subpath-needs-redirect"
 import { urlMatchDomains } from "./util/url/url-match-domains"
 import { urlMatchRedirects } from "./util/url/url-match-redirects"
 import { urlMatchSubpaths } from "./util/url/url-match-subpaths"
+import { urlMatchesTrailingSlashSetting } from "./util/url/url-matches-trailing-slash-setting"
 
 export class StrategyInvestigator {
   constructor(protected config: Config) {}
@@ -27,10 +28,9 @@ export class StrategyInvestigator {
 
   private getStrategy(request: Request): ChainableStrategy {
     const url = getRequestUrl(request)
-    const hasTrailingSlash = url.pathname.endsWith("/")
-    const nextConfigTrailingSlash = this.config.trailingSlash
 
-    if (hasTrailingSlash !== nextConfigTrailingSlash) {
+    if (!urlMatchesTrailingSlashSetting(url, this.config.trailingSlash)) {
+      // If the route doesn't match the `trailingSlash` setting, let Next.js handle the redirect
       return new Passthrough()
     }
 
