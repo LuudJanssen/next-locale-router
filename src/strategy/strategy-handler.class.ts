@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
-import { default as NextServer } from "next/dist/next-server/server/next-server"
 import { format, parse } from "url"
 import { logger } from "../logger"
+import { NextInternalServer, NextServer } from "../util/next-server.type"
 import { PermanentRedirectStrategy, RenderStrategy, Strategy, StrategyType } from "./strategy.type"
 import { getRequestUrl } from "./util/request/get-request-url"
 
@@ -12,14 +12,14 @@ export class StrategyHandler {
     this.handle = app.getRequestHandler()
   }
 
-  public handleStrategy(
+  public async handleStrategy(
     strategy: Strategy,
     request: Request,
     response: Response,
     next: NextFunction,
   ) {
     if (strategy.type === StrategyType.RENDER) {
-      return this.handleWithConfigOverride(strategy, request, response)
+      return await this.handleWithConfigOverride(strategy, request, response)
     }
 
     if (strategy.type === StrategyType.PERMANENT_REDIRECT) {
@@ -37,10 +37,16 @@ export class StrategyHandler {
     next()
   }
 
-  private handleWithConfigOverride(strategy: RenderStrategy, request: Request, response: Response) {
-    // This strategy temporarily
-    const { i18n: originalI18n, ...config } = this.app.nextConfig
-    this.app.nextConfig = config
+  private async handleWithConfigOverride(
+    strategy: RenderStrategy,
+    request: Request,
+    response: Response,
+  ) {
+    // We need to access Next.js internals to "hack" this feature. That's why we also pin Next.js to a specific version.
+    // @ts-expect-error
+    const server = (await this.app.getServer()) as NextInternalServer
+    const { i18n: originalI18n, ...config } = server.nextConfig
+    server.nextConfig = config
 
     const { pathname, ...url } = parse(request.url)
 
@@ -50,8 +56,8 @@ export class StrategyHandler {
       query: strategy.data.query,
     })
 
-    this.app.nextConfig = {
-      ...this.app.nextConfig,
+    server.nextConfig = {
+      ...server.nextConfig,
       i18n: originalI18n,
     }
 
