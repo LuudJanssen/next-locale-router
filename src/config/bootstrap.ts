@@ -1,4 +1,4 @@
-import { logger } from "../logger"
+import { logger } from "../server/logger"
 import { Config } from "./config.class"
 import { getConfigLocation } from "./util/get-config-location"
 import { readConfig } from "./util/read-config"

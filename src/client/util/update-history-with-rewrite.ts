@@ -1,5 +1,5 @@
-import { updateUrlWithRedirect } from "../../strategy/util/url/update-url-with-redirect"
-import { IRedirect } from "../../util/redirect.interface"
+import { updateUrlWithRedirect } from "../../server/strategy/util/url/update-url-with-redirect"
+import { IRedirect } from "../../server/util/redirect.interface"
 
 export const updateHistoryWithRewrite = (url: string, rewrite: IRedirect): boolean => {
   const newUrl = updateUrlWithRedirect(url, rewrite)

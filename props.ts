@@ -1,2 +1,2 @@
-export * from "./lib/props"
-export { default } from "./lib/props"
+export * from "./lib/server/props"
+export { default } from "./lib/server/props"

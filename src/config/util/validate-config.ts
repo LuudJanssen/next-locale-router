@@ -1,8 +1,8 @@
 import isLocale from "validator/lib/isLocale"
-import { IConfig } from "../../config.interface"
-import { getLocalesForDomains } from "../../util/get-locales-for-domains"
-import { getObjectType } from "../../util/get-object-type"
-import { isObject } from "../../util/is-object"
+import { getLocalesForDomains } from "../../server/util/get-locales-for-domains"
+import { getObjectType } from "../../server/util/get-object-type"
+import { isObject } from "../../server/util/is-object"
+import { IConfig } from "../config.interface"
 import { ConfigValidationError } from "./config-validation.error"
 import { validateDomain } from "./validate-domain"
 

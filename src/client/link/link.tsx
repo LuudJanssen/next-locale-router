@@ -24,6 +24,10 @@ const LinkLocaleRewriter = forwardRef<HTMLElement, LocaleRewriterProps>(
     const child = getLocaleRewriterChild(children)
     const historyMethod = replace ? "replaceState" : "pushState"
 
+    if (originalHref === "/") {
+      console.log(`REWROTE "${originalHref}" to "${href}"`)
+    }
+
     const nextOnClick = wrapClickHandlerWithRewrite(
       originalOnClick,
       historyMethod,

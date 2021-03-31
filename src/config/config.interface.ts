@@ -1,5 +1,5 @@
-import { IgnoreOption } from "./config/util/ignore-option.type"
-import { IDomain } from "./domain.interface"
+import { IDomain } from "../server/domain.interface"
+import { IgnoreOption } from "./util/ignore-option.type"
 
 export interface IConfig {
   domains: IDomain[]

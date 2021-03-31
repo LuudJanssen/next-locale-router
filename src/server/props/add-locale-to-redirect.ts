@@ -1,5 +1,5 @@
 import { Redirect } from "next"
-import { useConfig } from "../client/config/use-config.hook"
+import { useConfig } from "../../config"
 import { updateUrlWithRedirect } from "../strategy/util/url/update-url-with-redirect"
 import { getLocaleRedirectByLocale } from "../util/get-locale-redirect-by-locale"
 

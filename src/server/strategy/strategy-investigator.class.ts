@@ -1,5 +1,5 @@
 import { Request } from "express"
-import { Config } from "../config/config.class"
+import { Config } from "../../config/config.class"
 import { logger } from "../logger"
 import { getLocaleRedirects } from "../util/get-locale-redirects"
 import { getSubpathByLocale } from "../util/get-subpath-by-locale"

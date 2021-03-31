@@ -1,4 +1,4 @@
-import { useConfig } from "../client/config/use-config.hook"
+import { useConfig } from "../../config"
 import { stripLocalePathSegment } from "../strategy/util/url/strip-locale-path-segment"
 import { stripTrailingSlash } from "../strategy/util/url/strip-trailing-slash"
 import { getSubpathByLocale } from "../util/get-subpath-by-locale"

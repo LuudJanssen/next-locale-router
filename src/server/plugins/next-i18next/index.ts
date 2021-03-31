@@ -1,4 +1,4 @@
-import { IConfig } from "../../config.interface"
+import { IConfig } from "../../../config/config.interface"
 import { getLocalesForDomains } from "../../util/get-locales-for-domains"
 
 export const configToNextI18NextConfig = (config: IConfig) => {

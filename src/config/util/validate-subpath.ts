@@ -1,7 +1,7 @@
 import isLocale from "validator/lib/isLocale"
-import { ISubpath } from "../../subpath.interface"
-import { getObjectType } from "../../util/get-object-type"
-import { isObject } from "../../util/is-object"
+import { ISubpath } from "../../server/subpath.interface"
+import { getObjectType } from "../../server/util/get-object-type"
+import { isObject } from "../../server/util/is-object"
 import { ConfigValidationError } from "./config-validation.error"
 
 export const validateSubpath = (subpath: any, locationPrefix: string): subpath is ISubpath => {

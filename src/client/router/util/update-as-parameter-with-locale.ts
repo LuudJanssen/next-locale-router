@@ -1,7 +1,7 @@
 import { NextRouter } from "next/router"
 import { format } from "url"
-import { updateUrlWithRedirect } from "../../../strategy/util/url/update-url-with-redirect"
-import { IRedirect } from "../../../util/redirect.interface"
+import { updateUrlWithRedirect } from "../../../server/strategy/util/url/update-url-with-redirect"
+import { IRedirect } from "../../../server/util/redirect.interface"
 
 export const updateAsParameterWithLocale = (
   as: Parameters<NextRouter["replace"]>["1"],

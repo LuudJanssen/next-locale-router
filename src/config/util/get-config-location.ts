@@ -1,6 +1,6 @@
 import findUp from "find-up"
-import { CONFIG_FILENAME } from "../../constants/config-filename.constant"
-import { logger } from "../../logger"
+import { logger } from "../../server/logger"
+import { CONFIG_FILENAME } from "../constants/config-filename.constant"
 
 export const getConfigLocation = (): string => {
   const location = findUp.sync(CONFIG_FILENAME)

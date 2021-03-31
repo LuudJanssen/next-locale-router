@@ -1,1 +1,1 @@
-module.exports = require("./lib/client/config")
+module.exports = require("./lib/config")

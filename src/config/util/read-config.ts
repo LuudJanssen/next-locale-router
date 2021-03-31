@@ -1,5 +1,5 @@
-import { IConfig } from "../../config.interface"
-import { logger } from "../../logger"
+import { logger } from "../../server/logger"
+import { IConfig } from "../config.interface"
 import { ConfigValidationError } from "./config-validation.error"
 import { validateConfig } from "./validate-config"
 

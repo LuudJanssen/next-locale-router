@@ -1,5 +1,5 @@
 import { useRouter } from "next/router"
-import { IRedirect } from "../../../util/redirect.interface"
+import { IRedirect } from "../../../server/util/redirect.interface"
 import { addRewriteToRouterOnce } from "../../util/add-rewrite-to-router-once"
 import { ReplaceableHistoryMethods } from "../../util/replaceable-history-methods.type"
 

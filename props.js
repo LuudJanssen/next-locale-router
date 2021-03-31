@@ -1,1 +1,1 @@
-module.exports = require("./lib/props")
+module.exports = require("./lib/server/props")

@@ -1,5 +1,5 @@
 import { NextRouter } from "next/router"
-import { IRedirect } from "../../util/redirect.interface"
+import { IRedirect } from "../../server/util/redirect.interface"
 import { disableHistoryMethodForOneTick } from "../link/util/disable-history-method-for-one-tick"
 import { ReplaceableHistoryMethods } from "./replaceable-history-methods.type"
 import { updateHistoryWithRewrite } from "./update-history-with-rewrite"

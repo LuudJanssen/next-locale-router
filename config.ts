@@ -1,2 +1,2 @@
-export * from "./lib/client/config"
-export { default } from "./lib/client/config"
+export * from "./lib/config"
+export { default } from "./lib/config"

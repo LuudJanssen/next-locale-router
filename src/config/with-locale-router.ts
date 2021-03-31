@@ -1,6 +1,6 @@
 import { NextConfig } from "next/dist/next-server/server/config"
-import { CONFIG_RUNTIME_KEY } from "../constants/config-runtime-key.constant"
-import config from "./index"
+import config from "./"
+import { CONFIG_RUNTIME_KEY } from "./constants/config-runtime-key.constant"
 
 export const withLocaleRouter = () => (
   nextConfig: Partial<NextConfig> = {},

@@ -1,9 +1,9 @@
 import { config } from "process"
 import isLocale from "validator/lib/isLocale"
-import { IDomain } from "../../domain.interface"
-import { getObjectType } from "../../util/get-object-type"
-import { getSubpathsLocales } from "../../util/get-subpaths-locales"
-import { isObject } from "../../util/is-object"
+import { IDomain } from "../../server/domain.interface"
+import { getObjectType } from "../../server/util/get-object-type"
+import { getSubpathsLocales } from "../../server/util/get-subpaths-locales"
+import { isObject } from "../../server/util/is-object"
 import { ConfigValidationError } from "./config-validation.error"
 import { validateSubpath } from "./validate-subpath"
 

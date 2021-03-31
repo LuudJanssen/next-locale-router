@@ -1,4 +1,4 @@
-import { getLocaleRedirects } from "../../util/get-locale-redirects"
+import { getLocaleRedirects } from "../../server/util/get-locale-redirects"
 import { useLocaleRouterConfig } from "../config"
 
 export const useLocaleRedirect = (locale?: string) => {

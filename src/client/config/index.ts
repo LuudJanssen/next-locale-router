@@ -1,1 +1,1 @@
-export { useConfig as useLocaleRouterConfig } from "./use-config.hook"
+export { getRuntimeConfig as useLocaleRouterConfig } from "../../config/util/get-runtime-config"

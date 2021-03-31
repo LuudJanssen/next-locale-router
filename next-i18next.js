@@ -1,1 +1,1 @@
-module.exports = require("./lib/plugins/next-i18next")
+module.exports = require("./lib/server/plugins/next-i18next")
