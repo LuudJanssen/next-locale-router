@@ -2,6 +2,7 @@ import { NextRouter } from "next/router"
 import { format } from "url"
 import { updateUrlWithRedirect } from "../../../strategy/util/url/update-url-with-redirect"
 import { IRedirect } from "../../../util/redirect.interface"
+import { honorTrailingSlash } from "../../util/honor-trailing-slash"
 
 export const updateAsParameterWithLocale = (
   as: Parameters<NextRouter["replace"]>["1"],
@@ -12,5 +13,6 @@ export const updateAsParameterWithLocale = (
   }
 
   const normalizedAs = typeof as === "string" ? as : format(as)
-  return updateUrlWithRedirect(normalizedAs, redirect)
+  const asWithRedirect = updateUrlWithRedirect(normalizedAs, redirect)
+  return honorTrailingSlash(asWithRedirect)
 }
