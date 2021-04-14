@@ -7,8 +7,6 @@ export const updateHistoryWithRewrite = (url: string, rewrite: IRedirect): boole
   const urlWithRedirect = updateUrlWithRedirect(url, rewrite)
   const newUrl = honorTrailingSlash(urlWithRedirect)
 
-  console.log(url, urlWithRedirect, newUrl)
-
   if (stripTrailingSlash(url) === stripTrailingSlash(newUrl)) {
     return false
   }
