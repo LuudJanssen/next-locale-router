@@ -133,6 +133,41 @@ app.prepare().then(() => {
 })
 ```
 
+### Plugins
+
+#### `next-i18next`
+
+The scopes of `next-locale-router` and `next-i18next` don't really overlap. `next-locale-router` handles routing and `next-i18next` receives the locale from Next.js and simply gets the translations. The only part where they overlap is in the configuration. `next-i18next` and `next-locale-router` share most of their config. Therefore we created a plugin to generate part of the `next-i18next` configuration for you:
+
+**`next-i18next.config.js`**
+
+```javascript
+const { configToNextI18NextConfig } = require("@luudjanssen/next-locale-router/next-i18next")
+const config = require("./i18n.config")\
+
+module.exports = {
+  i18n: configToNextI18NextConfig(config),
+  // ... Other next-i18next specific configuration
+}
+```
+
+#### `next-translate`
+
+The scopes of `next-locale-router` and `next-translate` don't really overlap. `next-locale-router` handles routing and `next-translate` receives the locale from Next.js and simply gets the translations. The only part where they overlap is in the configuration. `next-translate` and `next-locale-router` share most of their config. Therefore we created a plugin to generate part of the `next-translate` configuration for you:
+
+**`i18n.js`**
+
+```javascript
+const { configToNextTranslateConfig } = require("@luudjanssen/next-locale-router/next-translate")
+const config = require("./i18n.config")
+const path = require("path")
+
+module.exports = {
+  ...configToNextTranslateConfig(config),
+  // ... Other next-translate specific configuration
+}
+```
+
 ### `<Link>` component
 
 On the client side we also need to rewrite the URL's. We do this by exposing a custom `<Link>` component, just like [Next.js's `<Link>` component](https://nextjs.org/docs/api-reference/next/link). It supports the exact same props as [next/link](https://nextjs.org/docs/api-reference/next/link), so you can just update your imports:
@@ -266,5 +301,5 @@ The wrapper of `next/router` works about the same as the `<Link>` component. We 
 - [x] Allow creating redirect props for usage in `getServerSideProps()` and `getStaticProps()`
 - [ ] Allow rewriting sitemaps according to the configuration.
 - [ ] Add unit tests for the most critical strategies.
-- [ ] Extend option to ignore (public) routes
+- [x] Extend option to ignore (public) routes
 - [ ] Automatically ignore routes in the `public` directory?
