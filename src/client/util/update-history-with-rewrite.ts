@@ -1,10 +1,13 @@
+import { stripTrailingSlash } from "../../strategy/util/url/strip-trailing-slash"
 import { updateUrlWithRedirect } from "../../strategy/util/url/update-url-with-redirect"
 import { IRedirect } from "../../util/redirect.interface"
+import { honorTrailingSlash } from "./honor-trailing-slash"
 
 export const updateHistoryWithRewrite = (url: string, rewrite: IRedirect): boolean => {
-  const newUrl = updateUrlWithRedirect(url, rewrite)
+  const urlWithRedirect = updateUrlWithRedirect(url, rewrite)
+  const newUrl = honorTrailingSlash(urlWithRedirect)
 
-  if (url === newUrl) {
+  if (stripTrailingSlash(url) === stripTrailingSlash(newUrl)) {
     return false
   }
 
