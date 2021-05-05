@@ -50,7 +50,7 @@ export class StrategyHandler {
 
     const { pathname, ...url } = parse(request.url)
 
-    this.handle(request, response, {
+    await this.handle(request, response, {
       ...url,
       pathname: strategy.data.pathname,
       query: strategy.data.query,
