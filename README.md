@@ -9,6 +9,8 @@ It also contains a couple of bugs where the locale of domain X (`/nl-BE`) is als
 
 This package solves these problems by exposing Express middleware to route these use cases in the desired way.
 
+> Note: This package uses hacks that change Next.js internals to make this work. It's pretty well tested, but it's important to note that we require you to pin your Next.js version to version 10.2.0 in order for this to work. If you use any other version, we can't guarentee routing will work.
+
 ## Usage
 
 This package requires you create a custom `server.js` file for your Next.js project and create a custom `i18n.config.js` file in the root of your project.
