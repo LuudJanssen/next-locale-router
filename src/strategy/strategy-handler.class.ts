@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express"
 import { format, parse } from "url"
 import { logger } from "../logger"
-import { NextInternalServer, NextServer } from "../util/next-server.type"
+import { NextInstance, NextServer } from "../util/next-server.type"
 import { PermanentRedirectStrategy, RenderStrategy, Strategy, StrategyType } from "./strategy.type"
 import { getRequestUrl } from "./util/request/get-request-url"
 
 export class StrategyHandler {
-  protected readonly handle: ReturnType<NextServer["getRequestHandler"]>
+  protected readonly handle: ReturnType<NextInstance["getRequestHandler"]>
 
-  constructor(protected app: NextServer) {
+  constructor(protected app: NextInstance) {
     this.handle = app.getRequestHandler()
   }
 
@@ -44,7 +44,7 @@ export class StrategyHandler {
   ) {
     // We need to access Next.js internals to "hack" this feature. That's why we also pin Next.js to a specific version.
     // @ts-expect-error
-    const server = (await this.app.getServer()) as NextInternalServer
+    const server = (await this.app.getServer()) as NextServer
     const { i18n: originalI18n, ...config } = server.nextConfig
     server.nextConfig = config
 

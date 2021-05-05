@@ -1,9 +1,9 @@
 import { RequestHandler } from "express"
 import { LocaleStrategyHandler, LocaleStrategyInvestigator } from ".."
 import { Config } from "../config/config.class"
-import { NextServer } from "../util/next-server.type"
+import { NextInstance } from "../util/next-server.type"
 
-export const createMiddleware = (config: Config, app: NextServer): RequestHandler => {
+export const createMiddleware = (config: Config, app: NextInstance): RequestHandler => {
   const localeStrategyInvestigator = new LocaleStrategyInvestigator(config)
   const localeStrategyHandler = new LocaleStrategyHandler(app)
 
