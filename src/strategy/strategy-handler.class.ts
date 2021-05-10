@@ -44,7 +44,7 @@ export class StrategyHandler {
   ) {
     // We need to access Next.js internals to "hack" this feature. That's why we also pin Next.js to a specific version.
     // @ts-expect-error
-    const server = (await this.app.getServer()) as NextServer
+    const server: NextServer = await this.app.getServer()
     const { i18n: originalI18n, ...config } = server.nextConfig
     server.nextConfig = config
 
