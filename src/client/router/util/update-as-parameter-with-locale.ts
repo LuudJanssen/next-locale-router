@@ -1,11 +1,10 @@
-import { NextRouter } from "next/router"
-import { format } from "url"
+import { format, UrlObject } from "url"
 import { updateUrlWithRedirect } from "../../../strategy/util/url/update-url-with-redirect"
 import { IRedirect } from "../../../util/redirect.interface"
 import { honorTrailingSlash } from "../../util/honor-trailing-slash"
 
 export const updateAsParameterWithLocale = (
-  as: Parameters<NextRouter["replace"]>["1"],
+  as: UrlObject | string | undefined,
   redirect: IRedirect,
 ) => {
   if (typeof as === "undefined") {
