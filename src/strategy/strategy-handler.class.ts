@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express"
 import { format, parse } from "url"
 import { logger } from "../logger"
-import { NextInstance, NextServer } from "../util/next-server.type"
+import { NextInstance } from "../util/next-server.type"
 import { PermanentRedirectStrategy, RenderStrategy, Strategy, StrategyType } from "./strategy.type"
+import { createForgivingFrozenObject } from "./util/create-forgiving-frozen-object"
 import { getRequestUrl } from "./util/request/get-request-url"
 
 export class StrategyHandler {
@@ -42,24 +43,14 @@ export class StrategyHandler {
     request: Request,
     response: Response,
   ) {
-    // We need to access Next.js internals to "hack" this feature. That's why we also pin Next.js to a specific version.
-    // @ts-expect-error
-    const server: NextServer = await this.app.getServer()
-    const { i18n: originalI18n, ...config } = server.nextConfig
-    server.nextConfig = config
-
     const { pathname, ...url } = parse(request.url)
+    const immutableQuery = createForgivingFrozenObject(strategy.data.query)
 
     await this.handle(request, response, {
       ...url,
       pathname: strategy.data.pathname,
-      query: strategy.data.query,
+      query: immutableQuery,
     })
-
-    server.nextConfig = {
-      ...server.nextConfig,
-      i18n: originalI18n,
-    }
 
     return
   }
