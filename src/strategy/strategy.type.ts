@@ -21,11 +21,12 @@ export interface PermanentRedirectStrategy {
 
 export interface RenderStrategyQueryParameters extends ParsedUrlQuery {
   __nextLocale: string
+  __nextDefaultLocale: string
 }
 
 export interface RenderStrategyData {
   pathname: string
-  query: ParsedUrlQuery
+  query: RenderStrategyQueryParameters
 }
 
 export interface RenderStrategy {
