@@ -1,1 +1,4 @@
-module.exports = require("./lib/client/config")
+module.exports = {
+  ...require("./lib/client/config"),
+  ...require("./lib/config/extend-next-config"),
+}

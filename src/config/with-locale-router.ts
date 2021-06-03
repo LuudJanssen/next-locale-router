@@ -1,15 +1,6 @@
 import { NextConfig } from "next/dist/next-server/server/config"
-import { CONFIG_RUNTIME_KEY } from "../constants/config-runtime-key.constant"
 import config from "./index"
+import { extendNextConfigWithConfigInstance } from "./util/extend-next-config-with-config-instance"
 
-export const withLocaleRouter = () => (
-  nextConfig: Partial<NextConfig> = {},
-): Partial<NextConfig> => ({
-  ...nextConfig,
-  i18n: config.toNextI18nConfig(),
-  publicRuntimeConfig: {
-    ...(nextConfig.publicRuntimeConfig ?? {}),
-    [CONFIG_RUNTIME_KEY]: config.toObject(),
-  },
-  trailingSlash: config.trailingSlash,
-})
+export const withLocaleRouter = () => (nextConfig: Partial<NextConfig> = {}): Partial<NextConfig> =>
+  extendNextConfigWithConfigInstance(nextConfig, config)
