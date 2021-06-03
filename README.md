@@ -206,10 +206,13 @@ import { addLocaleToRedirect } from "@incentro/next-locale-router/props"
 
 export const getServerSideProps: GetServerSideProps = ({ locale }) => {
   // This method rewrites the /about route to the right route for the given locale, e.g. `/nl/about`
-  const redirect = addLocaleToRedirect({
-    destination: '/about',
-    permanent: true,
-  }, locale)
+  const redirect = addLocaleToRedirect(
+    {
+      destination: "/about",
+      permanent: true,
+    },
+    locale,
+  )
 
   return { redirect }
 }

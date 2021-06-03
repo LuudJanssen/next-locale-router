@@ -5,14 +5,16 @@ import { updateAsParameterWithLocale } from "./update-as-parameter-with-locale"
 
 type WrappableRouterMethods = "push" | "replace"
 
-export const wrapRouterMethodWithLocaleRewrite = <TMethod extends WrappableRouterMethods>(
-  router: NextRouter,
-  method: TMethod,
-): NextRouter[TMethod] => (...args) => {
-  const [url, as, options] = args
-  const redirectForLocale = useLocaleRedirect(router.locale)
-  const asWithLocale = updateAsParameterWithLocale(as, redirectForLocale)
-  const historyMethod = method === "push" ? "pushState" : "replaceState"
-  addRewriteToRouterOnce(router, redirectForLocale, historyMethod)
-  return router[method](url, asWithLocale, options)
-}
+export const wrapRouterMethodWithLocaleRewrite =
+  <TMethod extends WrappableRouterMethods>(
+    router: NextRouter,
+    method: TMethod,
+  ): NextRouter[TMethod] =>
+  (...args) => {
+    const [url, as, options] = args
+    const redirectForLocale = useLocaleRedirect(router.locale)
+    const asWithLocale = updateAsParameterWithLocale(as, redirectForLocale)
+    const historyMethod = method === "push" ? "pushState" : "replaceState"
+    addRewriteToRouterOnce(router, redirectForLocale, historyMethod)
+    return router[method](url, asWithLocale, options)
+  }
